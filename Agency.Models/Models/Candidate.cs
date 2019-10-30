@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Agency.Models.Models
+{
+   public class Candidate : User
+    {
+        public virtual string Name { get; set; }
+        public virtual DateTime DateofBirth { get; set; }
+        [Display(Name = "Аватар")]
+        public virtual BinaryFile Avatar { get; set; }
+        public virtual List<Experience> Experience { get; set; }
+    }
+}
