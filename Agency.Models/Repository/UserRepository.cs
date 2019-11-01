@@ -36,7 +36,15 @@ namespace Agency.Models.Repository
             }
         }
 
-        
+        //public User CreateUser(User user)
+        //{
+        //    var createUser = String.Format("INSERT INTO [User] (UserName, Password, Role, Status) VALUES ( {0}, {1}, {2}, {3}) SELECT SCOPE_IDENTITY() ", user.UserName, user.Password.GetHashCode(), user.Role, Status.Active);
+        //    var result = session.CreateSQLQuery(createUser);//container.Resolve<ISession>()
+        //    var a = result;
+        //    result.ExecuteUpdate();
+        //    return result.;
+
+        //}
 
         public User GetCurrentUser(IPrincipal user = null)
         {

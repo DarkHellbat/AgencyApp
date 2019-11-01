@@ -12,22 +12,23 @@ using Agency.Models;
 using Agency.Models.Models;
 using Agency.Models.Repository;
 using NHibernate;
+using Agency.App_Start;
 
 namespace Agency.Controllers
 {
     [Authorize]
-    public class AccountController : BaseController
+    public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
         private UserManager _userManager;
         private UserRepository usrRepository;
         private ISession session;
 
-        //public AccountController()
-        //{
-        //}
+        public AccountController()
+        {
+        }
 
-        public AccountController(UserManager userManager, ApplicationSignInManager signInManager, UserRepository userRepository, ISession session) : base(userRepository, session)
+        public AccountController(UserManager userManager, ApplicationSignInManager signInManager, UserRepository userRepository, ISession session) //: base(userRepository, session)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -85,7 +86,7 @@ namespace Agency.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    var role = userRepository.FindByLogin(model.Email).Role;
+                    var role = usrRepository.FindByLogin(model.Email).Role;
                     return RedirectToAction("Main", String.Format("{0}", role.ToString()));
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -158,13 +159,9 @@ namespace Agency.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email, Role = model.Role, Password = model.Password, Status = Status.Active};
-                var createUser = String.Format("INSERT INTO [User] (UserName, Password, Role, Status) VALUES ( {0}, {1}, {2}, {3}) SELECT SCOPE_IDENTITY() ", model.Email, model.Password.GetHashCode(), model.Role, Status.Active);
-                var result = session.CreateSQLQuery(createUser);//container.Resolve<ISession>()
-                var a = result;
-                result.ExecuteUpdate();
-
-                //var result = await UserManager.CreateAsync(user, model.Password);
+                var user = new User { UserName = model.Email,  Password = model.Password, Status = Status.Active}; //Role = model.Role,
+                var result = await UserManager.CreateAsync(user, model.Password);
+                
                 try
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
@@ -175,6 +172,7 @@ namespace Agency.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
+                    _userManager.AddToRole(Convert.ToInt64(User.Identity.GetUserId()), user.Role.ToString());
                     return RedirectToAction("Main", String.Format("{0}", model.Role.ToString()));
                 }
                 catch

@@ -32,9 +32,16 @@
     <div class="form-group">
         <label>Что вы хотите найти?</label>
         <div>
-    @Html.RadioButtonFor(m => m.Role, "РАБоту")
-            @Html.RadioButton("role", "Работу")
-            @Html.RadioButton("role", "Работу")
+            <div>@Html.RadioButtonFor(m => m.Role, "РАБоту")</div> 
+            <div>
+                <label>Работу</label>
+                <div>@Html.RadioButton("role", "Jobseeker")</div>
+            </div>  
+            
+            <div>
+                <label>Сотрудников</label>
+                <div>@Html.RadioButton("role", "Employee")</div>
+            </div>       
         </div>
             
         

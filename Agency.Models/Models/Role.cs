@@ -10,6 +10,7 @@ namespace Agency.Models
     {
         Employee,
         Jobseeker,
-        Admin
+        Admin,
+        None
     }
 }

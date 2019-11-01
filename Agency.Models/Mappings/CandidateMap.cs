@@ -16,7 +16,7 @@ namespace Agency.Models.Mappings
             Id(u => u.Id).GeneratedBy.Identity();
             Map(c => c.Name).Length(100);
             Map(c => c.DateofBirth);
-            //References(c => c.Experience);
+            References(c => c.User);
             HasMany(c => c.Experience).KeyColumn("Id");
             References(c => c.Avatar).Cascade.SaveUpdate(); ;
         }

@@ -12,7 +12,8 @@ namespace Agency.Models.Mappings
         public VacancyMap()
         {
             Id(u => u.Id).GeneratedBy.Identity();
-            Map(u => u.DateRange);
+            Map(u => u.Starts);
+            Map(u => u.Ends);
             HasMany(c => c.Requirements).KeyColumn("Id");
             Map(u => u.VacancyDescription).Length(1000);
             References(u => u.Company);

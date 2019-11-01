@@ -1,4 +1,6 @@
-﻿using Agency.Models.Models;
+﻿using Agency.Extensions;
+using Agency.Models.Models;
+using Agency.Models.Repository;
 using Microsoft.AspNet.Identity;
 using NHibernate;
 using System;
@@ -14,7 +16,8 @@ namespace Agency.App_Start
          IUserLoginStore<User, long>,
          IUserPasswordStore<User, long>,
          IUserLockoutStore<User, long>,
-         IUserTwoFactorStore<User, long>
+         IUserTwoFactorStore<User, long>,
+        IUserRoleStore<User, long>
     {
         private readonly ISession session;
 
@@ -144,6 +147,33 @@ namespace Agency.App_Start
         public async Task<User> FindAsync(UserLoginInfo login)
         {
             return null;
+        }
+
+        public Task AddToRoleAsync(User user, string roleName) //реализация интерфейса IUserRoleStore
+        {
+            user.Role = RoleExtensions.RoleCheck(roleName);
+            return Task.Run(() => session.SaveOrUpdate(user));
+        }
+
+        public Task RemoveFromRoleAsync(User user, string roleName)
+        {
+            user.Role = Models.Role.None;
+            return Task.Run(() => session.SaveOrUpdate(user));
+        }
+
+        public async Task<IList<string>> GetRolesAsync(User user)
+        {
+            return new List<string> { user.Role.ToString()};// user.Role as List<string>; - почему-то не работает(
+        }
+
+        public Task<bool> IsInRoleAsync(User user, string roleName)
+        {
+            return Task.FromResult(RoleExtensions.RoleCheck(roleName).Equals(user.Role.ToString()));
+        }
+
+        public Task<User> FindByIdAsync(string userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
