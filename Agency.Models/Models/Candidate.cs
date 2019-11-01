@@ -11,7 +11,7 @@ namespace Agency.Models.Models
     {
         public virtual string Name { get; set; }
         public virtual DateTime DateofBirth { get; set; }
-        [Display(Name = "Аватар")]
+        [Display(Name = "Фото")]
         public virtual BinaryFile Avatar { get; set; }
         public virtual List<Experience> Experience { get; set; }
     }

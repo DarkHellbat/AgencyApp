@@ -13,9 +13,10 @@ namespace Agency.Models.Mappings
     {
         public CandidateMap()
         {
+            Id(u => u.Id).GeneratedBy.Identity();
             Map(c => c.Name).Length(100);
             Map(c => c.DateofBirth);
-            Map(c => c.Experience);
+            //References(c => c.Experience);
             HasMany(c => c.Experience).KeyColumn("Id");
             References(c => c.Avatar).Cascade.SaveUpdate(); ;
         }

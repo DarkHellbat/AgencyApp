@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Agency.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,18 +14,14 @@ namespace Agency.Controllers
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult CreateProfile()
         {
-            ViewBag.Message = "Your application description page.";
-
             return View();
         }
-
-        public ActionResult Contact()
+        [HttpPost]
+        public ActionResult CreateProfile(ProfileModel model)
         {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
+            return RedirectToAction("Main", "Jobseeker");
         }
-    }
+        }
 }

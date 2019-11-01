@@ -81,8 +81,9 @@ namespace Agency.Models
         public string ConfirmPassword { get; set; }
 
         [Required]
-        [Display(Name = "Role")]
+        [Display(Name = "Что вы ищете?")]
         public Role Role { get; set; }
+ 
 
     }
 

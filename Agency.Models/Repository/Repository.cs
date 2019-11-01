@@ -1,4 +1,5 @@
-﻿using NHibernate;
+﻿using Agency.Models.Filters;
+using NHibernate;
 using NHibernate.Criterion;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,9 @@ using System.Web.UI.WebControls;
 
 namespace Agency.Models.Repository
 {
-    public abstract class Repository<T>
-
-          where T : class
+    public class Repository<T, FT>
+       where T : class
+       where FT : BaseFilter
 
     {
         protected ISession session;
@@ -33,6 +34,19 @@ namespace Agency.Models.Repository
                     Order.Asc(options.SortExpression) :
                     Order.Desc(options.SortExpression));
             }
+        }
+
+        public IList<T> Find(FT filter, FetchOptions options = null)
+        {
+            var crit = session.CreateCriteria<T>();
+            SetupFilter(crit, filter);
+            SetFetchOptions(crit, options);
+            return crit.List<T>();
+        }
+
+        public virtual void SetupFilter(ICriteria crit, FT filter)
+        {
+            
         }
 
         public virtual IList<T> GetAll()

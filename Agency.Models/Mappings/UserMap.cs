@@ -14,8 +14,9 @@ namespace Agency.Models.Mappings
             Id(u => u.Id).GeneratedBy.Identity();
             Map(u => u.UserName).Length(30);
             Map(u => u.Password).Column("PasswordHash");
-            References(u => u.Role);
-            References(u => u.Status);
+            Map(u => u.PhoneNumber);
+            Map(u => u.Role);
+            Map(u => u.Status);
         }
     }
 }

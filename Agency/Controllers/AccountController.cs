@@ -11,25 +11,27 @@ using Microsoft.Owin.Security;
 using Agency.Models;
 using Agency.Models.Models;
 using Agency.Models.Repository;
+using NHibernate;
 
 namespace Agency.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private ApplicationSignInManager _signInManager;
         private UserManager _userManager;
-        private UserRepository userRepository;
+        private UserRepository usrRepository;
+        private ISession session;
 
-        public AccountController()
-        {
-        }
+        //public AccountController()
+        //{
+        //}
 
-        public AccountController(UserManager userManager, ApplicationSignInManager signInManager, UserRepository userRepository )
+        public AccountController(UserManager userManager, ApplicationSignInManager signInManager, UserRepository userRepository, ISession session) : base(userRepository, session)
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            userRepository = userRepository;
+            this.usrRepository = userRepository;
         }
 
         public ApplicationSignInManager SignInManager
@@ -83,8 +85,8 @@ namespace Agency.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                        var role = userRepository.FindByLogin(model.Email).Role;
-                        return RedirectToAction("Main", String.Format("{0}", role.ToString()));
+                    var role = userRepository.FindByLogin(model.Email).Role;
+                    return RedirectToAction("Main", String.Format("{0}", role.ToString()));
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -156,9 +158,14 @@ namespace Agency.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email, Role = model.Role};
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                var user = new User { UserName = model.Email, Role = model.Role, Password = model.Password, Status = Status.Active};
+                var createUser = String.Format("INSERT INTO [User] (UserName, Password, Role, Status) VALUES ( {0}, {1}, {2}, {3}) SELECT SCOPE_IDENTITY() ", model.Email, model.Password.GetHashCode(), model.Role, Status.Active);
+                var result = session.CreateSQLQuery(createUser);//container.Resolve<ISession>()
+                var a = result;
+                result.ExecuteUpdate();
+
+                //var result = await UserManager.CreateAsync(user, model.Password);
+                try
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
@@ -170,7 +177,9 @@ namespace Agency.Controllers
 
                     return RedirectToAction("Main", String.Format("{0}", model.Role.ToString()));
                 }
-                AddErrors(result);
+                catch
+                { }
+                //AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form

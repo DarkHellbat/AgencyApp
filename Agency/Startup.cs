@@ -50,7 +50,7 @@ namespace Agency
                 .InstancePerLifetimeScope();
             builder.RegisterControllers(Assembly.GetAssembly(typeof(AccountController)));
             builder.RegisterModule(new AutofacWebTypesModule());
-            builder.RegisterGeneric(typeof(Repository<>));
+            builder.RegisterGeneric(typeof(Repository<,>));
             builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(UserRepository)));
             var container = builder.Build().BeginLifetimeScope();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));

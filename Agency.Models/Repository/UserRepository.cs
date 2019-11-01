@@ -1,5 +1,6 @@
 ﻿using Agency.Models.Filters;
 using Agency.Models.Models;
+using FluentNHibernate.Mapping;
 using Microsoft.AspNet.Identity;
 using NHibernate;
 using NHibernate.Criterion;
@@ -14,7 +15,7 @@ using System.Web;
 
 namespace Agency.Models.Repository
 {
-    public class UserRepository : Repository<User>
+    public class UserRepository : Repository<User, JobseekersFilter>
     {
         public UserRepository(ISession session) :
             base(session)
@@ -35,46 +36,7 @@ namespace Agency.Models.Repository
             }
         }
 
-        public IList<Candidate> Find(JobseekersFilter filter, FetchOptions options = null)
-        {
-            var crit = session.CreateCriteria<Candidate>();
-            SetupFilter(filter, crit);
-            SetFetchOptions(crit, options);
-            return crit.List<Candidate>();
-        }
-
-        protected virtual void SetupFilter(ICriteria crit, JobseekersFilter filter)
-        {
-            if (filter != null)
-            {
-                //if (!string.IsNullOrEmpty(filter.Name))
-                //{
-                //    crit.Add(Restrictions.Like("Name", filter.Name, MatchMode.Anywhere));
-                //}
-                //if (filter.CreationDate != null)
-                //{
-                //    if (filter.CreationDate.From.HasValue)
-                //    {
-                //        crit.Add(Restrictions.Ge("Created", filter.CreationDate.From.Value));
-                //    }
-                //    if (filter.CreationDate.To.HasValue)
-                //    {
-                //        crit.Add(Restrictions.Le("Created", filter.CreationDate.To.Value));
-                //    }
-                //}
-                //if (filter.ChangingDate != null)
-                //{
-                //    if (filter.ChangingDate.From.HasValue)
-                //    {
-                //        crit.Add(Restrictions.Ge("Changed", filter.CreationDate.From.Value));
-                //    }
-                //    if (filter.CreationDate.To.HasValue)
-                //    {
-                //        crit.Add(Restrictions.Le("Changed", filter.CreationDate.To.Value));
-                //    }
-                //}
-            }
-        }
+        
 
         public User GetCurrentUser(IPrincipal user = null)
         {

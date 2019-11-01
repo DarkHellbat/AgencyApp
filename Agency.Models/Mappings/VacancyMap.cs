@@ -17,6 +17,7 @@ namespace Agency.Models.Mappings
             Map(u => u.VacancyDescription).Length(1000);
             References(u => u.Company);
             Map(u => u.VacancyName).Length(100);
+            Map(u => u.Status);
         }
     }
 }

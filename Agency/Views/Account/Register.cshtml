@@ -30,6 +30,16 @@
         </div>
     </div>
     <div class="form-group">
+        <label>Что вы хотите найти?</label>
+        <div>
+    @Html.RadioButtonFor(m => m.Role, "РАБоту")
+            @Html.RadioButton("role", "Работу")
+            @Html.RadioButton("role", "Работу")
+        </div>
+            
+        
+    </div>
+    <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <input type="submit" class="btn btn-default" value="Register" />
         </div>
