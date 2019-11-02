@@ -10,6 +10,11 @@ namespace Agency.Models.Models
 {
     public class User : IUser<long>
     {
+        public User()
+        {
+            Role = Role.None;
+            //Status.IsDefined(Status, Status.Active);
+        }
         public virtual long Id { get; set; }
         [Display(Name = "Логин")]
         //[InFastSearch]

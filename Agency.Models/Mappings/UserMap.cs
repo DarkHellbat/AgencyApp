@@ -15,7 +15,7 @@ namespace Agency.Models.Mappings
             Map(u => u.UserName).Length(30);
             Map(u => u.Password).Column("PasswordHash");
             Map(u => u.PhoneNumber);
-            Map(u => u.Role);
+            Map(u => u.Role).Nullable();
             Map(u => u.Status);
         }
     }

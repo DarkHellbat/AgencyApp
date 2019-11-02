@@ -159,9 +159,11 @@ namespace Agency.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email,  Password = model.Password, Status = Status.Active}; //Role = model.Role,
-                var result = await UserManager.CreateAsync(user, model.Password);
                 
+                var user = new User { UserName = model.Email,  Password = model.Password, Role = model.Role, Status = Status.Active}; //
+                var result = await UserManager.CreateAsync(user, model.Password);
+               
+
                 try
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
@@ -172,7 +174,7 @@ namespace Agency.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    _userManager.AddToRole(Convert.ToInt64(User.Identity.GetUserId()), user.Role.ToString());
+                     _userManager.AddToRole(Convert.ToInt64(User.Identity.GetUserId()), user.Role.ToString());
                     return RedirectToAction("Main", String.Format("{0}", model.Role.ToString()));
                 }
                 catch
