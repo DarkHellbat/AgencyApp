@@ -14,6 +14,7 @@ namespace Agency.Models.Mappings
             Id(f => f.Id).GeneratedBy.Identity();
             Map(f => f.Name);
             Map(f => f.ContentType);
+            Map(f => f.Content).Length(int.MaxValue);
 
         }
     }

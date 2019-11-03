@@ -16,5 +16,7 @@ namespace Agency.Models.Models
         public virtual string ContentType { get; set; }
 
         public virtual HttpPostedFileBase PostedFile { get; set; }
+
+        public virtual byte[] Content { get; set; }
     }
 }

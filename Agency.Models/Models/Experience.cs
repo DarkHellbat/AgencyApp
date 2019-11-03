@@ -8,6 +8,7 @@ namespace Agency.Models.Models
 {
     public class Experience
     {
+
         public virtual long Id { get; set; }
         public virtual string Skill { get; set; }
         public virtual long Duration { get; set; }

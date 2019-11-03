@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Agency.Models.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Web.Mvc;
 
 namespace Agency.Models
 {
-    public class ProfileModel
+    public class ProfileModel : EntityModel<Candidate>
     {
         [Display(Name = "Ваше ФИО")]
         public string Name { get; set; }

@@ -22,14 +22,11 @@ namespace Agency.Controllers
         private ApplicationSignInManager _signInManager;
         private UserManager _userManager;
         private UserRepository usrRepository;
-        private ISession session;
-
         public AccountController()
         {
         }
 
-        public AccountController(UserManager userManager, ApplicationSignInManager signInManager, UserRepository userRepository, ISession session) //: base(userRepository, session)
-        {
+        public AccountController(UserManager userManager, ApplicationSignInManager signInManager, UserRepository userRepository)         {
             UserManager = userManager;
             SignInManager = signInManager;
             this.usrRepository = userRepository;
@@ -160,7 +157,7 @@ namespace Agency.Controllers
             if (ModelState.IsValid)
             {
                 
-                var user = new User { UserName = model.Email,  Password = model.Password, Role = model.Role, Status = Status.Active}; //
+                var user = new User { UserName = model.Email,  Password = model.Password, Status = Status.Active}; //
                 var result = await UserManager.CreateAsync(user, model.Password);
                
 
@@ -174,7 +171,7 @@ namespace Agency.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                     _userManager.AddToRole(Convert.ToInt64(User.Identity.GetUserId()), user.Role.ToString());
+                    _userManager.AddToRoleAsync(user.Id, model.Role.ToString()); 
                     return RedirectToAction("Main", String.Format("{0}", model.Role.ToString()));
                 }
                 catch

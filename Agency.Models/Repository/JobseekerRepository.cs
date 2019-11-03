@@ -12,7 +12,7 @@ namespace Agency.Models.Repository
 {
     public class JobseekerRepository : Repository<Candidate, JobseekersFilter>
     {
-       public JobseekerRepository(ISession session) :
+        public JobseekerRepository(ISession session) :
                 base(session)
             {
           
@@ -28,6 +28,14 @@ namespace Agency.Models.Repository
                 
             }
         }
-       
+
+        public Candidate FindMyFrofile (long userId)
+        {
+            var crit = session.CreateCriteria<Candidate>();
+            crit.Add(Restrictions.Eq("User.Id", userId));
+            return crit.List<Candidate>().FirstOrDefault();
+
+        }
+
     }
 }

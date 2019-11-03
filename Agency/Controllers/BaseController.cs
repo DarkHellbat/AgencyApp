@@ -1,4 +1,6 @@
-﻿using Agency.Models.Repository;
+﻿using Agency.Models.Models;
+using Agency.Models.Repository;
+using Microsoft.AspNet.Identity.Owin;
 using NHibernate;
 using System;
 using System.Collections.Generic;
@@ -19,23 +21,14 @@ namespace Agency.Controllers
             session = Session;
         }
 
-        public ActionResult Index()
+        public UserManager UserManager
         {
-            return View();
+            get { return HttpContext.GetOwinContext().GetUserManager<UserManager>(); }
         }
 
-        public ActionResult About()
+        public User CurrentUser
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
+            get { return userRepository.GetCurrentUser(User); }
         }
     }
 }
