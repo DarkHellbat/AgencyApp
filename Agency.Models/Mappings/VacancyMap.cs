@@ -14,7 +14,7 @@ namespace Agency.Models.Mappings
             Id(u => u.Id).GeneratedBy.Identity();
             Map(u => u.Starts);
             Map(u => u.Ends);
-            HasMany(c => c.Requirements).KeyColumn("Id");
+            HasManyToMany(c => c.Requirements).Table("VacancyExperience");
             Map(u => u.VacancyDescription).Length(1000);
             References(u => u.Company);
             Map(u => u.VacancyName).Length(100);

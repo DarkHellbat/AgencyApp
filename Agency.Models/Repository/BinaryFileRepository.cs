@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Agency.Models.Repository
 {
-    public class BinaryFileRepository : Repository<BinaryFile, BinaryFileFilter>
+    public class BinaryFileRepository : Repository<BinaryFile, BaseFilter>
     {
         public BinaryFileRepository(ISession session) : base(session)
         {

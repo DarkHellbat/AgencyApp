@@ -39,7 +39,7 @@ namespace Agency.Controllers
                 var file = new BinaryFile()
                 {
                     Name = model.Photo.FileName,
-                    Content = model.Photo.InputStream.ToByteArray(),
+                    //Content = model.Photo.InputStream.ToByteArray(),
                     ContentType = model.Photo.ContentType
                 };
                 
@@ -48,8 +48,8 @@ namespace Agency.Controllers
                     DateofBirth = model.DateOfBirth,
                     Name = model.Name,
                     User = await userManager.FindByIdAsync(Convert.ToInt64(User.Identity.GetUserId())),
-                   Experience = model.Experience.ToList(),
-                   Avatar = file
+                    //Experience =  model.Experience.ToList(),
+                    Avatar = file
                 };
                 try
                 {
@@ -68,15 +68,15 @@ namespace Agency.Controllers
 
         public ActionResult ChangeProfile ()
         {
-            var profile = jobseekerRepository.FindMyFrofile(Convert.ToInt64(User.Identity.GetUserId()));
+            var profile = jobseekerRepository.FindProfile(Convert.ToInt64(User.Identity.GetUserId()));
             if (profile!=null)
             {
                 var model = new ProfileModel
                 {
                     DateOfBirth = profile.DateofBirth,
-                    Experience = profile.Experience,
+                    //Experience = profile.Experience,
                     Name = profile.Name,
-                    Photo = profile.Avatar 
+                    //Photo = profile.Avatar 
                 };
                 return RedirectToAction("Main", "Jobseeker");
             }
@@ -85,18 +85,39 @@ namespace Agency.Controllers
                 return RedirectToAction("CreateProfile", "Jobseeker");
             }
         }
+        [HttpPost]
+        public async Task< ActionResult> ChangeProfile(ProfileModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var file = new BinaryFile()
+                {
+                    Name = model.Photo.FileName,
+                    //Content = model.Photo.InputStream.ToByteArray(),
+                    ContentType = model.Photo.ContentType
+                };
+
+                Candidate candidate = new Candidate
+                {
+                    DateofBirth = model.DateOfBirth,
+                    Name = model.Name,
+                    User = await userManager.FindByIdAsync(Convert.ToInt64(User.Identity.GetUserId())),
+                    //Experience = model.Experience.ToList(),
+                    Avatar = file
+                };
+                try
+                {
+                    jobseekerRepository.Save(candidate);
+                    return RedirectToAction("Main", "Jobseeker");
+                }
+                catch
+                {
+                    //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Record Inserted Successfully')", true);
+                    return RedirectToAction("Main", "Jobseeker");
+                }
+
+            }
+            return RedirectToAction("Main", "Jobseeker"); //добавить оповещения
         }
-    //public ActionResult Create(UserViewModel model)
-    //{
-    //    if (ModelState.IsValid)
-    //    {
-    //        var res = UserManager.CreateAsync(model.Entity, model.Password);
-    //        if (res.Result == IdentityResult.Success)
-    //        {
-    //            GetFileProvider().Save(model.Entity.Avatar);
-    //            return RedirectToAction("Index");
-    //        }
-    //    }
-    //    return View(model);
-    //}
+        }
 }
