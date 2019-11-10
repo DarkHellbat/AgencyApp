@@ -72,6 +72,7 @@
     <Compile Include="Filters\DateRange.cs" />
     <Compile Include="Filters\JobseekersFilter.cs" />
     <Compile Include="Filters\Range.cs" />
+    <Compile Include="Filters\VacancyFilter.cs" />
     <Compile Include="Mappings\BinaryFileMap.cs" />
     <Compile Include="Mappings\CandidateMap.cs" />
     <Compile Include="Mappings\CompanyMap.cs" />
@@ -88,6 +89,8 @@
     <Compile Include="Models\Vacancy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\BinaryFileRepository.cs" />
+    <Compile Include="Repository\CompanyRepository.cs" />
+    <Compile Include="Repository\EmployeeRepository.cs" />
     <Compile Include="Repository\FetchOptions.cs" />
     <Compile Include="Repository\JobseekerRepository.cs" />
     <Compile Include="Repository\Repository.cs" />

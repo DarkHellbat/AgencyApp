@@ -29,7 +29,7 @@ namespace Agency.Models.Repository
             }
         }
 
-        public Candidate FindMyFrofile (long userId)
+        public Candidate FindProfile (long userId)
         {
             var crit = session.CreateCriteria<Candidate>();
             crit.Add(Restrictions.Eq("User.Id", userId));

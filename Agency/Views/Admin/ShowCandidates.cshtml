@@ -1,0 +1,69 @@
+﻿@model IEnumerable<Agency.Models.Models.Candidate>
+   @using Agency.Extensions;
+
+@{
+    ViewBag.Title = "ShowCandidates";
+}
+
+<h2>ShowCandidates</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table" border="1" align="center">
+    <tr>
+        @if (Model.Count() != 0)
+        {
+            <td>
+                @Html.SortLink("Имя", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+            </td>
+            <td>
+                @Html.SortLink("Дата роджения", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+            </td>
+            <td>
+                @Html.SortLink("Опыт", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+            </td>
+            //а черт его знает, нужна ли сортировка по опыту, но пусть пока будет
+            <td>
+                @Html.SortLink("Имя", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+            </td>
+            <td>
+                @Html.SortLink("Почта", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+            </td>
+            <td>
+                @Html.SortLink("Телефон", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+            </td>
+            <td></td>
+        }
+        else
+        {
+            @Html.Label("Похоже, что в системе пока нет сохраненных анкет");
+        }
+    </tr>
+
+    @foreach (var item in Model)
+    {
+    <tr>
+        <td>@item.Name</td>
+        <td>@item.DateofBirth</td>
+        <td>
+            @foreach (var exp in item.Experience)
+            {
+                @exp.Skill
+            }
+        </td>
+        <td>@item.Avatar</td>
+        <td>@item.User.UserName</td>
+        <td>@item.User.PhoneNumber</td>
+        <td></td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        </td>
+    </tr>
+            }
+
+</table>
+
+
