@@ -17,19 +17,39 @@ namespace Agency.Controllers
     {
         private UserManager userManager;
         private JobseekerRepository jobseekerRepository;
+        private ExperienceRepository experienceRepository;
 
-        public JobseekerController( JobseekerRepository jobseekerRepository)
+        public JobseekerController( JobseekerRepository jobseekerRepository, ExperienceRepository experienceRepository)
         {
             this.jobseekerRepository = jobseekerRepository;
+            this.experienceRepository = experienceRepository;
         }
 
         public ActionResult Main()
         {
             return View();
         }
+
+        public MultiSelectList GetExperienceLists()
+        {
+            List<SelectListItem> listItems = new List<SelectListItem>();
+            foreach (var e in experienceRepository.GetAll())
+            {
+                SelectListItem item = new SelectListItem
+                {
+                    Text = e.Skill,
+                    Value = e.Id.ToString()
+                }; 
+                listItems.Add(item);
+            }
+            MultiSelectList items = new MultiSelectList(listItems.OrderBy(i => i.Text), "Value", "Text");
+            return items;
+        }
+
         public ActionResult CreateProfile()
         {
-            return View();
+            var model = new ProfileModel(GetExperienceLists());
+            return View(model);
         }
         [HttpPost]
         public async Task<ActionResult> CreateProfile(ProfileModel model)
@@ -71,13 +91,19 @@ namespace Agency.Controllers
             var profile = jobseekerRepository.FindProfile(Convert.ToInt64(User.Identity.GetUserId()));
             if (profile!=null)
             {
-                var model = new ProfileModel
+                var exp = GetExperienceLists();
+                foreach (SelectListItem e in exp.Items) //profile.Experience)
+                {
+                    if (profile.Experience.Contains(experienceRepository.Load(Convert.ToInt64(e))) == true)
+                        e.Selected = true;
+                }
+                var model = new ProfileModel(GetExperienceLists())
                 {
                     DateOfBirth = profile.DateofBirth,
-                    //Experience = profile.Experience,
+                    Experience = exp,
                     Name = profile.Name,
                     //Photo = profile.Avatar 
-                };
+                };           
                 return RedirectToAction("Main", "Jobseeker");
             }
             else
@@ -86,7 +112,7 @@ namespace Agency.Controllers
             }
         }
         [HttpPost]
-        public async Task< ActionResult> ChangeProfile(ProfileModel model)
+        public async Task<ActionResult> ChangeProfile(ProfileModel model)
         {
             if (ModelState.IsValid)
             {
@@ -96,15 +122,19 @@ namespace Agency.Controllers
                     //Content = model.Photo.InputStream.ToByteArray(),
                     ContentType = model.Photo.ContentType
                 };
-
+                var n = model.Experience.SelectedValues;
                 Candidate candidate = new Candidate
                 {
                     DateofBirth = model.DateOfBirth,
                     Name = model.Name,
                     User = await userManager.FindByIdAsync(Convert.ToInt64(User.Identity.GetUserId())),
-                    //Experience = model.Experience.ToList(),
                     Avatar = file
                 };
+                foreach (var e in model.Experience.SelectedValues)
+                {
+                    Experience experience = experienceRepository.Load(Convert.ToInt64(e)); //оно сработает???
+                    candidate.Experience.Add(experience);
+                }
                 try
                 {
                     jobseekerRepository.Save(candidate);

@@ -23,7 +23,7 @@ namespace Agency.Models
         [Display(Name = "Выберите название компании")]
         public SelectList Company { get; set; }
         [Display(Name = "Выберите требуемые навыки из списка")]
-        public SelectList Experience { get; set; }
+        public MultiSelectList Experience { get; set; }
 
         [DataType(DataType.Text)]
         [Display(Name = "Статус вакансии")]

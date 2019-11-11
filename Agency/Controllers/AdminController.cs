@@ -95,7 +95,6 @@ namespace Agency.Controllers
                 userManager.AddToRole(Id, "Blocked");
             }
             else
-                user.Status = Status.Active;
             {
                 userManager.RemoveFromRole(Id, "Blocked");
                 userManager.AddToRole(Id, "Active");

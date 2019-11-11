@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls;
 
 namespace Agency.Models
 {
@@ -15,6 +16,6 @@ namespace Agency.Models
 
         public string LinkText { get; set; }
 
-        public System.Web.UI.WebControls.SortDirection? SortDirection { get; set; }
+        public SortDirection? SortDirection { get; set; }
     }
 }

@@ -11,14 +11,14 @@ using System.Web.Mvc;
 
 namespace Agency.Controllers
 {
-    public class employerController : Controller
+    public class EmployerController : Controller
     {
         private CompanyRepository companyRepository;
         private EmployerRepository employerRepository;
         private ISession session;
 
 
-        public employerController(EmployerRepository employerRepository, CompanyRepository companyRepository, ISession session)
+        public EmployerController(EmployerRepository employerRepository, CompanyRepository companyRepository, ISession session)
         {
             this.employerRepository = employerRepository;
         }
@@ -49,7 +49,7 @@ namespace Agency.Controllers
                 Status = Status.Active,
                 VacancyDescription = model.Description,
                 //Company = model.CompanyName.FirstOrDefault(),
-                Requirements = model.Experience.SelectedValue as List<Experience>
+                Requirements = model.Experience.SelectedValues as List<Experience>
             };
             try
             {
@@ -89,7 +89,6 @@ namespace Agency.Controllers
                 Name = vacancy.VacancyName,
                 Starts = vacancy.Starts
             };
-            //model.CompanyName.Append()
             return View(model);
         }
 
@@ -105,10 +104,20 @@ namespace Agency.Controllers
                 Status = Status.Active,
                 VacancyDescription = model.Description,
                 //Company = model.CompanyName.SelectedValue,
-                Requirements = model.Experience.SelectedValue as List<Experience>
+                Requirements = model.Experience.SelectedValues as List<Experience>
             };
             employerRepository.Save(vacancy);
             return RedirectToAction("Main", "employer");
         }
+
+        public ActionResult ChangeStatus(long Id)
+        {
+            Vacancy vacancy = employerRepository.Load(Id);
+            if (vacancy.Status == Status.Active)
+                vacancy.Status = Status.Blocked;
+            else
+                vacancy.Status = Status.Active;
+            return RedirectToAction("ShowMyVacancies", "employer"); 
         }
+    }
 }

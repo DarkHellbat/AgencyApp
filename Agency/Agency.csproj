@@ -198,7 +198,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\JobseekerController.cs" />
-    <Compile Include="Controllers\EmployeeController.cs" />
+    <Compile Include="Controllers\EmployerController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -393,6 +393,7 @@
     <Content Include="Views\Employer\Main.cshtml" />
     <Content Include="Views\Shared\SortLink.cshtml" />
     <Content Include="Views\Admin\ShowVacancies.cshtml" />
+    <Content Include="Views\Jobseeker\CreateProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

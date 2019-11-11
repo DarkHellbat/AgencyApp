@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
+using System.Web.UI.WebControls;
 
 namespace Agency.Extensions
 {
@@ -32,7 +33,7 @@ namespace Agency.Extensions
                 }
             }
             routeValues["SortExpression"] = sortExpression;
-            routeValues["SortDirection"] = sort.HasValue && sort.Value == System.Web.UI.WebControls.SortDirection.Ascending ?
+            routeValues["SortDirection"] = sort.HasValue && sort.Value == SortDirection.Ascending ?
                 System.Web.UI.WebControls.SortDirection.Descending :
                 System.Web.UI.WebControls.SortDirection.Ascending;
             return html.Partial("SortLink", new SortLinkModel

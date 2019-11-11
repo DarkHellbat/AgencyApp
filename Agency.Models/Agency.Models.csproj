@@ -91,6 +91,7 @@
     <Compile Include="Repository\BinaryFileRepository.cs" />
     <Compile Include="Repository\CompanyRepository.cs" />
     <Compile Include="Repository\EmployeeRepository.cs" />
+    <Compile Include="Repository\ExperienceRepository.cs" />
     <Compile Include="Repository\FetchOptions.cs" />
     <Compile Include="Repository\JobseekerRepository.cs" />
     <Compile Include="Repository\Repository.cs" />
