@@ -13,12 +13,13 @@ namespace Agency.Controllers
     public class BaseController : Controller
     {
         protected UserRepository userRepository;
-        protected ISession Session;
+        protected ISession session;
+        protected UserManager _userManager;
 
-        public BaseController(UserRepository repository, ISession session)
+        public BaseController(UserRepository userRepository, ISession session)
         {
-            repository = userRepository;
-            session = Session;
+            this.userRepository = userRepository;
+            this.session = session;
         }
 
         public UserManager UserManager
@@ -30,5 +31,6 @@ namespace Agency.Controllers
         {
             get { return userRepository.GetCurrentUser(User); }
         }
+
     }
 }

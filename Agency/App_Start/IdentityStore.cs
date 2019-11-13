@@ -29,6 +29,7 @@ namespace Agency.App_Start
         #region IUserStore<User, int>
         public Task CreateAsync(User user)
         {
+            //AddToRoleAsync(user, user.Role.ToString());
             return Task.Run(() => session.SaveOrUpdate(user));
         }
 

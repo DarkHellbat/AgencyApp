@@ -42,7 +42,7 @@ namespace Agency.Controllers
                 }; 
                 listItems.Add(item);
             }
-            MultiSelectList items = new MultiSelectList(listItems.OrderBy(i => i.Text), "Value", "Text");
+            MultiSelectList items = new MultiSelectList(listItems.OrderBy(i => i.Text));
             return items;
         }
 

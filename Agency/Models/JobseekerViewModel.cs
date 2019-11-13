@@ -20,7 +20,7 @@ namespace Agency.Models
         [DataType(DataType.Date)]
         [Display(Name = "День рождения")]
         public DateTime DateOfBirth { get; set; }
-        [DataType(DataType.Upload)]
+        //[DataType(DataType.Upload)]
         [Display(Name = "Фото")]
         public HttpPostedFile Photo { get; set; }
 

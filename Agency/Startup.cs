@@ -11,6 +11,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using NHibernate;
+using NHibernate.Dialect;
 using NHibernate.Tool.hbm2ddl;
 using Owin;
 using System;
@@ -20,6 +21,7 @@ using System.Reflection;
 using System.Web.Mvc;
 
 [assembly: OwinStartupAttribute(typeof(Agency.Startup))]
+[assembly: OwinStartup(typeof(Agency.Startup))]
 namespace Agency
 {
     public partial class Startup
@@ -34,32 +36,40 @@ namespace Agency
             {
                 var cfg = Fluently.Configure()
                                 .Database(MsSqlConfiguration.MsSql2012
-                                .ConnectionString(connectionSttring.ConnectionString))
+                                .ConnectionString(connectionSttring.ConnectionString)
+                                .Dialect<MsSql2012Dialect>())
                                 .Mappings(m => {
-                                    m.HbmMappings.AddFromAssemblyOf<User>();// -- раскомментить если работа через nhm.xml
                                     m.FluentMappings.AddFromAssemblyOf<User>();
                                    })
                                 .CurrentSessionContext("call");
                 var schemaExport = new SchemaUpdate(cfg.BuildConfiguration());
                 schemaExport.Execute(true, true);
+
                 return cfg.BuildSessionFactory();
             }).As<ISessionFactory>().SingleInstance();
             builder.Register(x => x.Resolve<ISessionFactory>().OpenSession())
                 .As<ISession>()
-                .InstancePerLifetimeScope();
+                .InstancePerRequest().InstancePerLifetimeScope();
             builder.RegisterControllers(Assembly.GetAssembly(typeof(AccountController)));
             builder.RegisterModule(new AutofacWebTypesModule());
             builder.RegisterGeneric(typeof(Repository<,>));
+            builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(UserRepository)))
+                .AsSelf()
+                .AsImplementedInterfaces();
+            //builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(UserManager)));
+
+
+            var container = builder.Build().BeginLifetimeScope();
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
             //builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(UserManager)))
             //    .AsSelf()
             //    .AsImplementedInterfaces();
 
-            builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(UserRepository)));
+            
                 //.AsSelf()
                 //.AsImplementedInterfaces();
 
-            var container = builder.Build().BeginLifetimeScope();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
             app.UseAutofacMiddleware(container);
             try
@@ -77,8 +87,7 @@ namespace Agency
             { }
             app.CreatePerOwinContext(() => new UserManager(new App_Start.IdentityStore(DependencyResolver.Current.GetServices<ISession>().FirstOrDefault())));
             app.CreatePerOwinContext<ApplicationSignInManager>((options, context) => new ApplicationSignInManager(context.GetUserManager<UserManager>(), context.Authentication));
-            //app.CreatePerOwinContext<UserManager>(UserManager.Create);
-
+            
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,

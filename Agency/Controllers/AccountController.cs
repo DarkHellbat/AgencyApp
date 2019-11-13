@@ -30,8 +30,6 @@ namespace Agency.Controllers
 
         public AccountController(UserManager userManager, UserRepository userRepository)
         {
-
-            //_userManager = get_UserManager();//Request.GetOwinContext().GetUserManager<UserManager>();
             this.usrRepository = userRepository;
         }
 
@@ -162,7 +160,7 @@ namespace Agency.Controllers
                 
                 var user = new User { UserName = model.Email,  Password = model.Password, Status = Status.Active}; //
                 var result = await UserManager.CreateAsync(user, model.Password);
-               
+                var r = await UserManager.AddToRoleAsync(user.Id, model.Role.ToString()); 
 
                 //try
                 //{
@@ -174,7 +172,7 @@ namespace Agency.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    var r = await UserManager.AddToRoleAsync(user.Id, model.Role.ToString()); 
+                   
                     return RedirectToAction("Main", String.Format("{0}", model.Role.ToString()));
                 //}
                 //catch (Exception ex)
