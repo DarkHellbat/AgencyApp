@@ -16,6 +16,7 @@ namespace Agency.Models.Models
         public virtual DateTime Ends { get; set; }
         public virtual Company Company { get; set; } 
         public virtual IList<Experience> Requirements { get; set; }
+        public virtual User Creator { get; set; }
         public virtual Status Status { get; set; }
     }
 }

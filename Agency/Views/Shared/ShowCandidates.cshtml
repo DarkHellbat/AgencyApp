@@ -1,18 +1,18 @@
-﻿@model IEnumerable<Agency.Models.VacancyListViewModel>
-@using Agency.Extensions;
+﻿@model Agency.Models.ProfileListViewModel
+   @using Agency.Extensions;
 
 @{
-    ViewBag.Title = "ShowVacancies";
+    ViewBag.Title = "ShowCandidates";
 }
 
-<h2>ShowVacancies</h2>
+<h2>ShowCandidates</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table" border="1" align="center">
     <tr>
-        @if (Model.Count() != 0)
+        @if (Model.Profiles.Count() != 0)
         {
             <td>
                 @Html.SortLink("Имя", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
@@ -41,28 +41,28 @@
         }
     </tr>
 
-    @foreach (var item in Model.Vacancies)
+    @foreach (var item in Model.Profiles)
     {
-        <tr>
-            <td>@item</td>
-            <td>@item.DateofBirth</td>
-            <td>
-                @foreach (var exp in item.Experience)
-                {
-                    @exp.Skill
-                }
-            </td>
-            <td>@item.Avatar</td>
-            <td>@item.User.UserName</td>
-            <td>@item.User.PhoneNumber</td>
-            <td></td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-    }
+    <tr>
+        <td>@item.Name</td>
+        <td>@item.DateofBirth</td>
+        <td>
+            @foreach (var exp in item.Experience)
+            {
+                @exp.Skill
+            }
+        </td>
+        <td>@item.Avatar</td>
+        <td>@item.User.UserName</td>
+        <td>@item.User.PhoneNumber</td>
+        <td></td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        </td>
+    </tr>
+            }
 
 </table>
 

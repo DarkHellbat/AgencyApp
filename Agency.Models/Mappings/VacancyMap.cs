@@ -17,6 +17,7 @@ namespace Agency.Models.Mappings
             HasManyToMany(c => c.Requirements).Table("VacancyExperience");
             Map(u => u.VacancyDescription).Length(1000);
             References(u => u.Company);
+            References(v => v.Creator);
             Map(u => u.VacancyName).Length(100);
             Map(u => u.Status);
         }

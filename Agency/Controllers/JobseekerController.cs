@@ -86,7 +86,7 @@ namespace Agency.Controllers
             return RedirectToAction("Main", "Jobseeker"); //добавить оповещения
         }
 
-        public ActionResult ChangeProfile ()
+        public ActionResult EditProfile ()
         {
             var profile = jobseekerRepository.FindProfile(Convert.ToInt64(User.Identity.GetUserId()));
             if (profile!=null)
@@ -112,7 +112,7 @@ namespace Agency.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> ChangeProfile(ProfileModel model)
+        public async Task<ActionResult> EditProfile(ProfileModel model)
         {
             if (ModelState.IsValid)
             {

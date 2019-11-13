@@ -1,18 +1,19 @@
-﻿@model IEnumerable<Agency.Models.Models.Candidate>
-   @using Agency.Extensions;
+﻿@model Agency.Models.VacancyListViewModel
+@using Agency.Extensions;
+@using Agency.Models;
 
 @{
-    ViewBag.Title = "ShowCandidates";
+    ViewBag.Title = "ShowVacancies";
 }
 
-<h2>ShowCandidates</h2>
+<h2>ShowVacancies</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table" border="1" align="center">
     <tr>
-        @if (Model.Count() != 0)
+        @if (Model.Vacancies.Count() != 0)
         {
             <td>
                 @Html.SortLink("Имя", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
@@ -41,28 +42,37 @@
         }
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in Model.Vacancies)
     {
-    <tr>
-        <td>@item.Name</td>
-        <td>@item.DateofBirth</td>
-        <td>
-            @foreach (var exp in item.Experience)
+        <tr>
+            <td>@item.VacancyName</td>
+            <td>@item.VacancyDescription</td>
+            <td>@item.Company.CompanyName</td>
+            <td>
+                @foreach (var exp in item.Requirements)
+                {
+                    @exp.Skill
+                    <br/>
+                }
+            </td>
+            <td>@item.Starts</td>
+            <td>@item.Ends</td>
+            <td>
+                @item.Status
+                <br />
+                @Html.ActionLink("изменить статус", "ChangeStatus")
+            </td>
+            <td></td>
+            @if (Model.Vacancies.FirstOrDefault().Creator.Role == Role.Employer)
             {
-                @exp.Skill
+            <td>
+                @Html.ActionLink("Редактировать вакансию", "EditProfile", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
             }
-        </td>
-        <td>@item.Avatar</td>
-        <td>@item.User.UserName</td>
-        <td>@item.User.PhoneNumber</td>
-        <td></td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-        </td>
-    </tr>
-            }
+        </tr>
+    }
 
 </table>
 

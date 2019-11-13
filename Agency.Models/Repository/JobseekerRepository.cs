@@ -21,9 +21,12 @@ namespace Agency.Models.Repository
         {
             if (filter != null)
             {
-                if (filter.experience!=null)
+                if (filter.Experience!=null)
                 {
-                    crit.Add(Restrictions.IdEq(filter.experience));
+                    foreach (var restriction in filter.Experience)
+                    {
+                        crit.Add(Restrictions.IdEq(filter.Experience));
+                    }
                 }
                 
             }

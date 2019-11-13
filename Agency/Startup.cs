@@ -8,6 +8,7 @@ using FluentNHibernate.Cfg.Db;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using NHibernate;
 using NHibernate.Tool.hbm2ddl;
@@ -37,9 +38,7 @@ namespace Agency
                                 .Mappings(m => {
                                     m.HbmMappings.AddFromAssemblyOf<User>();// -- раскомментить если работа через nhm.xml
                                     m.FluentMappings.AddFromAssemblyOf<User>();
-                                    //  m.HbmMappings.AddFromAssembly("DocumentStorage.Models");
-
-                                })
+                                   })
                                 .CurrentSessionContext("call");
                 var schemaExport = new SchemaUpdate(cfg.BuildConfiguration());
                 schemaExport.Execute(true, true);
@@ -51,17 +50,26 @@ namespace Agency
             builder.RegisterControllers(Assembly.GetAssembly(typeof(AccountController)));
             builder.RegisterModule(new AutofacWebTypesModule());
             builder.RegisterGeneric(typeof(Repository<,>));
+
+            //builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(UserManager)))
+            //    .AsSelf()
+            //    .AsImplementedInterfaces();
+
             builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(UserRepository)));
+                //.AsSelf()
+                //.AsImplementedInterfaces();
+
             var container = builder.Build().BeginLifetimeScope();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
-            //ContainerBuilder ApplicationContainer = container;
             app.UseAutofacMiddleware(container);
             try
             {
-                var CreateProcedure = @"CREATE PROCEDURE [dbo].[sp_InsertVacancy] ";
+                var CreateProcedure = @"CREATE PROCEDURE [dbo].[sp_InsertVacancy] @VacancyName nvarchar(100),
+                                        @VacancyDescription nvarchar(1000), @Starts DateTime2,@Ends DateTime2, @Creator_id bigint, @Status nvarchar(255),
+                                        @Company_id bigint AS INSERT INTO [Vacancy] (VacancyName, VacancyDescription, Starts, Ends, Creator_id, Status, Company_id )
+                                        VALUES ( @VacancyName, @VacancyDescription, @Starts, @Ends, @Creator_id, @Status, @Company_id ) SELECT SCOPE_IDENTITY() ";
 
-                var result = container.Resolve<ISession>().CreateSQLQuery(CreateProcedure);
-                var a = result;
+                var result = container.Resolve<ISession>().CreateSQLQuery(CreateProcedure);;
                 result.ExecuteUpdate();
 
             }
@@ -69,6 +77,7 @@ namespace Agency
             { }
             app.CreatePerOwinContext(() => new UserManager(new App_Start.IdentityStore(DependencyResolver.Current.GetServices<ISession>().FirstOrDefault())));
             app.CreatePerOwinContext<ApplicationSignInManager>((options, context) => new ApplicationSignInManager(context.GetUserManager<UserManager>(), context.Authentication));
+            //app.CreatePerOwinContext<UserManager>(UserManager.Create);
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {

@@ -22,13 +22,16 @@ namespace Agency.Controllers
         private ApplicationSignInManager _signInManager;
         private UserManager _userManager;
         private UserRepository usrRepository;
+
         public AccountController()
         {
+
         }
 
-        public AccountController(UserManager userManager, ApplicationSignInManager signInManager, UserRepository userRepository)         {
-            UserManager = userManager;
-            SignInManager = signInManager;
+        public AccountController(UserManager userManager, UserRepository userRepository)
+        {
+
+            //_userManager = get_UserManager();//Request.GetOwinContext().GetUserManager<UserManager>();
             this.usrRepository = userRepository;
         }
 
@@ -83,7 +86,7 @@ namespace Agency.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    var role = usrRepository.FindByLogin(model.Email).Role;
+                    var role = UserManager.GetRoles(Convert.ToInt64(User.Identity.GetUserId())).SingleOrDefault();//usrRepository.FindByLogin(model.Email).Role;
                     return RedirectToAction("Main", String.Format("{0}", role.ToString()));
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -161,8 +164,8 @@ namespace Agency.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                
 
-                try
-                {
+                //try
+                //{
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -171,11 +174,11 @@ namespace Agency.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    _userManager.AddToRoleAsync(user.Id, model.Role.ToString()); 
+                    var r = await UserManager.AddToRoleAsync(user.Id, model.Role.ToString()); 
                     return RedirectToAction("Main", String.Format("{0}", model.Role.ToString()));
-                }
-                catch
-                { }
+                //}
+                //catch (Exception ex)
+                //{ }
                 //AddErrors(result);
             }
 

@@ -31,4 +31,13 @@ namespace Agency.Models
         [Display(Name = "Фото")]
         public string ExpAsText { get; set; }
     }
+
+    public class ProfileListViewModel : EntityModel<List<Candidate>>
+    {
+        public IList<Candidate> Profiles { get; set; }
+        public ProfileListViewModel()
+        {
+            Profiles = new List<Candidate>();
+        }
+    }
 }

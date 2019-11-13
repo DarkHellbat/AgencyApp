@@ -27,12 +27,6 @@ namespace Agency.Controllers
             return View();
         }
 
-        public ActionResult ShowMyVacancies()
-        {
-            var vacancies = employerRepository.ShowMyVacancies(Convert.ToInt64(User.Identity.GetUserId()));
-            return View(vacancies);
-        }
-
         public ActionResult CreateVacancy()
         {
             return View();
@@ -41,8 +35,8 @@ namespace Agency.Controllers
         [HttpPost]
         public ActionResult CreateVacancy(VacancyViewModel model)
         {
-            var vacancy = new Vacancy //возможно имеет смысл вынести этот код в метод репозитория? 
-            {//т.к. он повторяется
+            var vacancy = new Vacancy 
+            {
                 Ends = model.Ends,
                 Starts = model.Starts,
                 VacancyName = model.Name,
@@ -53,16 +47,7 @@ namespace Agency.Controllers
             };
             try
             {
-                var result = session.CreateSQLQuery("exec sp_InsertVacancy :VacancyName, :VacancyDescription, :Starts, :Ends, :User_id, :Status, :Company_id")
-                    .SetParameter("VacancyName", vacancy.VacancyName)
-                    .SetParameter("VacancyDescription", vacancy.VacancyDescription)
-                    .SetParameter("Starts", vacancy.Starts)
-                    .SetParameter("Ends", vacancy.Ends)
-                    .SetParameter("User_id", Convert.ToInt64( User.Identity.GetUserId()))
-                    .SetParameter("Status", vacancy.Status)
-                    .SetParameter("Company_id", vacancy.Company.Id)
-                    ;
-                result.ExecuteUpdate();
+                employerRepository.SaveWProcedure(vacancy, Convert.ToInt64(User.Identity.GetUserId()));
                 return RedirectToAction("Main", "employer");
             }
             catch
@@ -117,7 +102,7 @@ namespace Agency.Controllers
                 vacancy.Status = Status.Blocked;
             else
                 vacancy.Status = Status.Active;
-            return RedirectToAction("ShowMyVacancies", "employer"); 
+            return RedirectToAction("ShowVacancies", "employer"); 
         }
     }
 }

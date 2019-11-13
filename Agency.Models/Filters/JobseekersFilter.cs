@@ -9,6 +9,7 @@ namespace Agency.Models.Filters
 {
     public class JobseekersFilter : BaseFilter
     {
-        public Experience experience { get; set; }
+        public List<Experience> Experience { get; set; }
+   
     }
 }

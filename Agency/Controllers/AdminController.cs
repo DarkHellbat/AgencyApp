@@ -30,19 +30,9 @@ namespace Agency.Controllers
 
         public ActionResult ShowCandidates()
         {
-            var Profiles = jobseekerRepository.GetAll();//model = new ProfileListViewModel
-            //{
-            //    Profiles = jobseekerRepository.GetAll() 
-            //};
-
-            return View(Profiles);
-        }
-
-        public ActionResult ShowVacancies()
-        {
-            var model = new VacancyListViewModel
+            var model = new ProfileListViewModel
             {
-                Vacancies = employerRepository.GetAll()
+                Profiles = jobseekerRepository.GetAll()
             };
 
             return View(model);

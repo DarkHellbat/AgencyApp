@@ -152,7 +152,8 @@ namespace Agency.App_Start
         public Task AddToRoleAsync(User user, string roleName) //реализация интерфейса IUserRoleStore
         {
             user.Role = RoleExtensions.RoleCheck(roleName);
-            return Task.Run(() => session.SaveOrUpdate(user));
+            
+            return Task.Run(() => session.Update(user));//session.Flush()); 
         }
 
         public Task RemoveFromRoleAsync(User user, string roleName)
