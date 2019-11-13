@@ -158,7 +158,7 @@ namespace Agency.Controllers
             if (ModelState.IsValid)
             {
                 
-                var user = new User { UserName = model.Email,  Password = model.Password, Status = Status.Active}; //
+                var user = new User { UserName = model.Email,  Password = model.Password, Status = Status.Active, Role = model.Role}; 
                 var result = await UserManager.CreateAsync(user, model.Password);
                 var r = await UserManager.AddToRoleAsync(user.Id, model.Role.ToString()); 
 

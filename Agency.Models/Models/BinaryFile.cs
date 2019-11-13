@@ -10,9 +10,8 @@ namespace Agency.Models.Models
    public class BinaryFile
     {
         public virtual long Id { get; set; }
-
         public virtual string Name { get; set; }
-
+        public virtual string Path { get; set; }
         public virtual string ContentType { get; set; }
 
         public virtual HttpPostedFileBase PostedFile { get; set; }

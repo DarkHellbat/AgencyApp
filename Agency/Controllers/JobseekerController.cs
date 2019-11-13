@@ -48,7 +48,10 @@ namespace Agency.Controllers
 
         public ActionResult CreateProfile()
         {
-            var model = new ProfileModel(GetExperienceLists());
+            var model = new ProfileModel
+            {
+                Experience = GetExperienceLists()
+            };   
             return View(model);
         }
         [HttpPost]
@@ -56,7 +59,7 @@ namespace Agency.Controllers
         {
             if (ModelState.IsValid)
             {
-                var file = new BinaryFile()
+                var file = new BinaryFile
                 {
                     Name = model.Photo.FileName,
                     //Content = model.Photo.InputStream.ToByteArray(),
@@ -97,10 +100,11 @@ namespace Agency.Controllers
                     if (profile.Experience.Contains(experienceRepository.Load(Convert.ToInt64(e))) == true)
                         e.Selected = true;
                 }
-                var model = new ProfileModel(GetExperienceLists())
+                var model = new ProfileModel
                 {
+                    Experience = GetExperienceLists(),
                     DateOfBirth = profile.DateofBirth,
-                    Experience = exp,
+                    //Experience = exp,
                     Name = profile.Name,
                     //Photo = profile.Avatar 
                 };           

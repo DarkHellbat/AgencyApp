@@ -10,19 +10,15 @@ namespace Agency.Models
 {
     public class ProfileModel : EntityModel<Candidate>
     {
-        public ProfileModel(MultiSelectList items)
-        {
-            Experience = new MultiSelectList(items);
-        }
-
         [Display(Name = "Ваше ФИО")]
         public string Name { get; set; }
         [DataType(DataType.Date)]
         [Display(Name = "День рождения")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DateOfBirth { get; set; }
         //[DataType(DataType.Upload)]
         [Display(Name = "Фото")]
-        public HttpPostedFile Photo { get; set; }
+        public HttpPostedFileBase Photo { get; set; }
 
         [Display(Name = "Выберите свои навыки из списка")]
         public MultiSelectList Experience { get; set; }
