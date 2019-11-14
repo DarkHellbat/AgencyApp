@@ -13,13 +13,11 @@ namespace Agency.Controllers
     public class BaseController : Controller
     {
         protected UserRepository userRepository;
-        protected ISession session;
         protected UserManager _userManager;
 
-        public BaseController(UserRepository userRepository, ISession session)
+        public BaseController(UserRepository userRepository)
         {
             this.userRepository = userRepository;
-            this.session = session;
         }
 
         public UserManager UserManager

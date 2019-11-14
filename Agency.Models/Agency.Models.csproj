@@ -71,6 +71,7 @@
     <Compile Include="Filters\BaseFilter.cs" />
     <Compile Include="Filters\BinaryFileFilter.cs" />
     <Compile Include="Filters\DateRange.cs" />
+    <Compile Include="Filters\ExperienceFilter.cs" />
     <Compile Include="Filters\JobseekersFilter.cs" />
     <Compile Include="Filters\Range.cs" />
     <Compile Include="Filters\VacancyFilter.cs" />

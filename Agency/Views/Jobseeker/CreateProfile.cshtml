@@ -11,45 +11,52 @@
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-            </div>
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.DateOfBirth, htmlAttributes: new { @class = "control-label col-md-2" })
-            @*<div class="col-md-10">*@
-            <div class='input-group date col-sm-3'>
-                @*<input type="date" id="CreationDate" />*@
-                @Html.EditorFor(model => model.DateOfBirth, new { htmlAttributes = new { @class = "form-control" } })
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-                @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.DateOfBirth, htmlAttributes: new { @class = "control-label col-md-2" })
+        @*<div class="col-md-10">*@
+        <div class='input-group date col-sm-3'>
+            @*<input type="date" id="CreationDate" />*@
+            @Html.EditorFor(model => model.DateOfBirth, new { htmlAttributes = new { @class = "form-control" } })
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+            @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
         </div>
-
+    </div>
         <div class="form-group">
             @Html.LabelFor(model => model.Experience, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.ListBoxFor(model => model.Experience, Model.Experience, new { size = 8 })
+                @Html.ListBox("exp", new MultiSelectList(Model.Experience))
                 @Html.ValidationMessageFor(model => model.Experience, "", new { @class = "text-danger" })
             </div>
         </div>
-
-        @Html.LabelFor(model => model.Photo, htmlAttributes: new { @class = "control-label col-md-2" })
+      <div class="form-group">
+        @Html.LabelFor(model => model.ExpAsText, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            <input type="file" name="Photo"/>
-            @*@Html.EditorFor(model => model.Photo, new { htmlAttributes = new { @class = "form-control", @type = "file" } })*@
-            @Html.ValidationMessageFor(model => model.Photo, "", new { @class = "text-danger" })
+            @Html.EditorFor(model => model.ExpAsText, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ExpAsText, "", new { @class = "text-danger" })
         </div>
     </div>
+
+    @Html.LabelFor(model => model.Photo, htmlAttributes: new { @class = "control-label col-md-2" })
+    <div class="col-md-10">
+        <input type="file" name="Photo" />
+        @*@Html.EditorFor(model => model.Photo, new { htmlAttributes = new { @class = "form-control", @type = "file" } })*@
+        @Html.ValidationMessageFor(model => model.Photo, "", new { @class = "text-danger" })
+    </div>
+</div>
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
@@ -69,21 +76,32 @@
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
 }
-<script type="text/javascript">
-    $(function () {
-        $('#DateOfBirth').datetimepicker({
-            //value: 'Model.Today',
-            // defaultDate: 'Model.DateOfBirth.tod',
-            minDate: '2013/12/03',
-            //yearRange = '2010-2030',
-            format: 'MM/DD/YYYY',
-            showTodayButton: true
-            //
-        }).on('dp.change', function (e) {
-            $(this).data('DateTimePicker')..hide();
+    <script type="text/javascript">
+        $(function () {
+            $('#DateOfBirth').datetimepicker({
+                //value: 'Model.Today',
+                // defaultDate: 'Model.DateOfBirth.tod',
+                minDate: '2013/12/03',
+                //yearRange = '2010-2030',
+                format: 'MM/DD/YYYY',
+                showTodayButton: true
+                //
+            }).on('dp.change', function (e) {
+                $(this).data('DateTimePicker').hide();
+            });
+            $("#setDate").click(function () {
+                $('#DateOfBirth').data("DateTimePicker").date(moment('15.11.2017', 'DD/MM/YYYY'));
+            });
         });
-        $("#setDate").click(function () {
-            $('#DateOfBirth').data("DateTimePicker").date(moment('15.11.2017', 'DD/MM/YYYY'));
-        });
-    });
+
+
+            $(function(){
+                $("#Experience").on("change", function {
+                    $("#ExpAsText").val($(this).text() + "\n")
+                        .click(function {
+                            $("#ExpAsText").val($(this).text() + "\n");
+                });
+            });
+
+
 </script>

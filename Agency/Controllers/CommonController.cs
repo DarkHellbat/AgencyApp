@@ -12,8 +12,8 @@ namespace Agency.Controllers
     public class CommonController : BaseController 
     {
         private EmployerRepository employerRepository;
-        public CommonController(UserRepository userRepository, EmployerRepository employerRepository, ISession session)
-            : base (userRepository, session)
+        public CommonController(UserRepository userRepository, EmployerRepository employerRepository)
+            : base (userRepository)
         {
             this.employerRepository = employerRepository;
         }

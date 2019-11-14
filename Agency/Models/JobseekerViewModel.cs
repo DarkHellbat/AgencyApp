@@ -21,7 +21,7 @@ namespace Agency.Models
         public HttpPostedFileBase Photo { get; set; }
 
         [Display(Name = "Выберите свои навыки из списка")]
-        public MultiSelectList Experience { get; set; }
+        public List<SelectListItem>Experience { get; set; } //Здесь раньше был MultiSelectList, но контроллер не смог с ним работать
 
         [DataType(DataType.Text)]
         [Display(Name = "Фото")]

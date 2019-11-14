@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity;
 using NHibernate;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -13,16 +14,18 @@ using System.Web.UI;
 
 namespace Agency.Controllers
 {
-    public class JobseekerController : Controller
+    public class JobseekerController : BaseController
     {
         private UserManager userManager;
         private JobseekerRepository jobseekerRepository;
         private ExperienceRepository experienceRepository;
+        private BinaryFileRepository fileRepository;
 
-        public JobseekerController( JobseekerRepository jobseekerRepository, ExperienceRepository experienceRepository)
+        public JobseekerController( JobseekerRepository jobseekerRepository, ExperienceRepository experienceRepository, BinaryFileRepository fileRepository, UserRepository userRepository) : base (userRepository)
         {
             this.jobseekerRepository = jobseekerRepository;
             this.experienceRepository = experienceRepository;
+            this.fileRepository = fileRepository;
         }
 
         public ActionResult Main()
@@ -30,7 +33,7 @@ namespace Agency.Controllers
             return View();
         }
 
-        public MultiSelectList GetExperienceLists()
+        public List<SelectListItem> GetExperienceLists()
         {
             List<SelectListItem> listItems = new List<SelectListItem>();
             foreach (var e in experienceRepository.GetAll())
@@ -42,9 +45,10 @@ namespace Agency.Controllers
                 }; 
                 listItems.Add(item);
             }
-            MultiSelectList items = new MultiSelectList(listItems.OrderBy(i => i.Text));
-            return items;
+           return listItems;
         }
+
+        
 
         public ActionResult CreateProfile()
         {
@@ -57,21 +61,43 @@ namespace Agency.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateProfile(ProfileModel model)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
+                var path = AppDomain.CurrentDomain.BaseDirectory;
                 var file = new BinaryFile
                 {
                     Name = model.Photo.FileName,
+                    Path = Path.Combine(path, @"App_Data\Files", DateTime.Now.ToString().Replace("/", "_").Replace(":", "_") + model.Photo.FileName),
                     //Content = model.Photo.InputStream.ToByteArray(),
                     ContentType = model.Photo.ContentType
                 };
-                
-                Candidate candidate = new Candidate
+            if (!Directory.Exists(file.Path))
+            {
+                Directory.CreateDirectory(Path.Combine(path, @"App_Data\Files"));
+                 
+            }
+            using (var fileStream = System.IO.File.Create(file.Path))
+                {
+                    model.Photo.InputStream.Seek(0, System.IO.SeekOrigin.Begin);
+                    model.Photo.InputStream.CopyTo(fileStream);
+                }
+            fileRepository.Save(file);
+            List<long> IdList = new List<long>();
+            var request = Request.Form["Experience"];
+
+                foreach (var e in model.Experience)
+            {
+                if (e.Selected == true)
+                {
+                    IdList.Add(Convert.ToInt64(e.Value));
+                }
+            }
+            Candidate candidate = new Candidate
                 {
                     DateofBirth = model.DateOfBirth,
                     Name = model.Name,
-                    User = await userManager.FindByIdAsync(Convert.ToInt64(User.Identity.GetUserId())),
-                    //Experience =  model.Experience.ToList(),
+                    User = UserManager.FindById(Convert.ToInt64(User.Identity.GetUserId())),
+                    Experience = experienceRepository.GetSelectedExperience(IdList),
                     Avatar = file
                 };
                 try
@@ -85,7 +111,7 @@ namespace Agency.Controllers
                     return RedirectToAction("Main", "Jobseeker");
                 }
                
-            }
+            //}
             return RedirectToAction("Main", "Jobseeker"); //добавить оповещения
         }
 
@@ -95,7 +121,7 @@ namespace Agency.Controllers
             if (profile!=null)
             {
                 var exp = GetExperienceLists();
-                foreach (SelectListItem e in exp.Items) //profile.Experience)
+                foreach (SelectListItem e in exp) //profile.Experience)
                 {
                     if (profile.Experience.Contains(experienceRepository.Load(Convert.ToInt64(e))) == true)
                         e.Selected = true;
@@ -126,7 +152,7 @@ namespace Agency.Controllers
                     //Content = model.Photo.InputStream.ToByteArray(),
                     ContentType = model.Photo.ContentType
                 };
-                var n = model.Experience.SelectedValues;
+
                 Candidate candidate = new Candidate
                 {
                     DateofBirth = model.DateOfBirth,
@@ -134,10 +160,13 @@ namespace Agency.Controllers
                     User = await userManager.FindByIdAsync(Convert.ToInt64(User.Identity.GetUserId())),
                     Avatar = file
                 };
-                foreach (var e in model.Experience.SelectedValues)
+                foreach (var e in model.Experience)
                 {
-                    Experience experience = experienceRepository.Load(Convert.ToInt64(e)); //оно сработает???
-                    candidate.Experience.Add(experience);
+                    if (e.Selected == true)
+                    {
+                        Experience experience = experienceRepository.Load(Convert.ToInt64(e.Value)); //оно сработает???
+                        candidate.Experience.Add(experience);
+                    }
                 }
                 try
                 {
