@@ -10,33 +10,21 @@ using System.Web.Mvc;
 
 namespace Agency.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : BaseController
     {
-        private JobseekerRepository jobseekerRepository;
         private EmployerRepository employerRepository;
-        private UserRepository userRepository;
-        private UserManager userManager;
-        public AdminController(JobseekerRepository jobseekerRepository, EmployerRepository employerRepository, UserRepository userRepository, UserManager userManager)
+        public AdminController(EmployerRepository employerRepository, UserRepository userRepository,/* UserManager userManager, */
+            ExperienceRepository experienceRepository) : base (userRepository, experienceRepository)
         {
-            this.jobseekerRepository = jobseekerRepository;
             this.employerRepository = employerRepository;
             this.userRepository = userRepository;
-            this.userManager = userManager;
         }
         public ActionResult Main()
         {
             return View();
         }
 
-        public ActionResult ShowCandidates()
-        {
-            var model = new ProfileListViewModel
-            {
-                Profiles = jobseekerRepository.GetAll()
-            };
-
-            return View(model);
-        }
+        
 
         public ActionResult ShowUsers()
         {
@@ -48,7 +36,7 @@ namespace Agency.Controllers
             return View(model);
         }
 
-        public ActionResult ChangeUser()
+        public ActionResult EditUser()
         {
             var current = userRepository.Load(Convert.ToInt64(User.Identity.GetUserId()));
             var model = new RegisterViewModel
@@ -62,7 +50,7 @@ namespace Agency.Controllers
         }
 
         [HttpPost]
-        public ActionResult ChangeUser(RegisterViewModel model)
+        public ActionResult EditUser(RegisterViewModel model)
         {
            var user = new User
             {
@@ -81,14 +69,17 @@ namespace Agency.Controllers
             var user = userRepository.Load(Id);
             if (user.Status == Status.Active)
             {
-                userManager.RemoveFromRole(Id, "Active");
-                userManager.AddToRole(Id, "Blocked");
+                user.Status = Status.Blocked;
+                //UserManager.RemoveFromRole(Id, "Active");
+                //UserManager.AddToRole(Id, "Blocked");
             }
             else
             {
-                userManager.RemoveFromRole(Id, "Blocked");
-                userManager.AddToRole(Id, "Active");
+                user.Status = Status.Active;
+                //UserManager.RemoveFromRole(Id, "Blocked");
+                //UserManager.AddToRole(Id, "Active");
             }
+            userRepository.Save(user);
             return RedirectToAction("Main", "Admin");
         }
     }

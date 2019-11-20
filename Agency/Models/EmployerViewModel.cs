@@ -35,6 +35,7 @@ namespace Agency.Models
     public class VacancyListViewModel : EntityModel<List<Vacancy>>
     {
         public IList<Vacancy> Vacancies { get; set; }
+        public Role Role { get; set; }
         public VacancyListViewModel()
         {
             Vacancies = new List<Vacancy>();

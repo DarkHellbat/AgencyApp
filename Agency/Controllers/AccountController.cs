@@ -21,16 +21,16 @@ namespace Agency.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private UserManager _userManager;
-        private UserRepository usrRepository;
 
         public AccountController()
         {
 
         }
 
-        public AccountController(UserManager userManager, UserRepository userRepository)
+        public AccountController(UserManager userManager, ApplicationSignInManager signInManager)
         {
-            this.usrRepository = userRepository;
+            UserManager = userManager;
+            SignInManager = signInManager;
         }
 
         public ApplicationSignInManager SignInManager
@@ -95,6 +95,7 @@ namespace Agency.Controllers
                     try
                     {
                         var role = UserManager.GetRoles(Convert.ToInt64(User.Identity.GetUserId())).SingleOrDefault();
+                        //иногда возникает проблема с созданием UserManager. Выглядит как проблема из коробки. Но оно работает само по себе
                         return RedirectToAction("Main", String.Format("{0}", role.ToString()));
                     }
                     catch

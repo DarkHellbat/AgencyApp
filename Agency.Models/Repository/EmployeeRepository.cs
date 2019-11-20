@@ -46,10 +46,12 @@ namespace Agency.Models.Repository
             {
                 if (filter.Experience != null)
                 {
-                    foreach (var exp in filter.Experience)
+                    List<long> exp = new List<long>();
+                    foreach (var e in filter.Experience)
                     {
-                        //crit.Add(Restrictions.In(""));
+                        exp.Add(e.Id);
                     }
+                    crit.Add(Restrictions.In("Id", exp));
                 }
                 if (filter.StartDateRange != null)
                 {

@@ -9,32 +9,37 @@
 <h2>ShowVacancies</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+    @if (Model.Role == Role.Employer)
+    {
+        @Html.ActionLink("Create New", "Createvacancy", "Employer")
+    }
+    </p>
 <table class="table" border="1" align="center">
     <tr>
         @if (Model.Vacancies.Count() != 0)
         {
             <td>
-                @Html.SortLink("Имя", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Название вакансии", "VacancyName", "ShowVacancies", "Common", new RouteValueDictionary { { "Id", Model.Vacancies[0].Id } })
             </td>
             <td>
-                @Html.SortLink("Дата роджения", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Описание", "VacancyDescription", "ShowVacancies", "Common", new RouteValueDictionary { })
             </td>
             <td>
-                @Html.SortLink("Опыт", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Компания", "Company", "ShowVacancies", "Common", new RouteValueDictionary { })
             </td>
             //а черт его знает, нужна ли сортировка по опыту, но пусть пока будет
             <td>
-                @Html.SortLink("Имя", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Требуемый опыт", "Requirements", "ShowVacancies", "Common", new RouteValueDictionary { })
             </td>
             <td>
-                @Html.SortLink("Почта", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Начало", "Starts", "ShowVacancies", "Common", new RouteValueDictionary { })
             </td>
             <td>
-                @Html.SortLink("Телефон", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Окончание", "Ends", "ShowVacancies", "Common", new RouteValueDictionary { })
             </td>
-            <td></td>
+            <td>
+                @Html.SortLink("Статус", "Status", "ShowVacancies", "Common", new RouteValueDictionary { })
+            </td>
         }
         else
         {
@@ -60,10 +65,10 @@
             <td>
                 @item.Status
                 <br />
-                @Html.ActionLink("изменить статус", "ChangeStatus")
+                @Html.ActionLink("Изменить статус", "ChangeStatus")
             </td>
             <td></td>
-            @if (Model.Vacancies.FirstOrDefault().Creator.Role == Role.Employer)
+            @if (Model.Role == Role.Employer)
             {
             <td>
                 @Html.ActionLink("Редактировать вакансию", "EditProfile", new { id = item.Id }) |

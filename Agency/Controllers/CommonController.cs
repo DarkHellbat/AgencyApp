@@ -12,32 +12,34 @@ namespace Agency.Controllers
     public class CommonController : BaseController 
     {
         private EmployerRepository employerRepository;
-        public CommonController(UserRepository userRepository, EmployerRepository employerRepository, ExperienceRepository experienceRepository)
+        private JobseekerRepository jobseekerRepository;
+        public CommonController(UserRepository userRepository, EmployerRepository employerRepository, ExperienceRepository experienceRepository, JobseekerRepository jobseekerRepository)
             : base (userRepository, experienceRepository)
         {
             this.employerRepository = employerRepository;
+            this.jobseekerRepository = jobseekerRepository;
         }
         public ActionResult Index()
         {
             return View();
         }
 
-        public ActionResult ShowVacancies()
+        public ActionResult ShowVacancies(FetchOptions options)
         {
+            var model = new VacancyListViewModel
+            {
+                Role = CurrentUser.Role
+            };
             switch(CurrentUser.Role)
             {
                 case Models.Role.Employer:
                     {
-                        var vacancies = employerRepository.ShowMyVacancies(CurrentUser.Id);
-                        return View(vacancies);
+                        model.Vacancies = employerRepository.ShowMyVacancies(CurrentUser.Id);
+                       return View(model);
                     }
                 case Models.Role.Admin:
                     {
-                        var model = new VacancyListViewModel
-                        {
-                            Vacancies = employerRepository.GetAll()
-                        };
-
+                        model.Vacancies = employerRepository.GetAll();
                         return View(model);
                     }
                 case Role.Jobseeker:
@@ -48,6 +50,16 @@ namespace Agency.Controllers
             }
 
             return View();
+        }
+
+        public ActionResult ShowCandidates()
+        {
+            var model = new ProfileListViewModel
+            {
+                Profiles = jobseekerRepository.GetAll()
+            };
+
+            return View(model);
         }
 
         public ActionResult AccessError()
