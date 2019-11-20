@@ -57,6 +57,14 @@ namespace Agency.Controllers
             }
         }
 
+
+        public ActionResult EnterError()
+        {
+            ViewBag.Message = @"Кажется, возникли проблемы со входом. Попробуйте перезапустить приложение 
+                                или выйти из учетной записи и зайти снова";
+            return View();
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]
@@ -84,8 +92,15 @@ namespace Agency.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    var role = UserManager.GetRoles(Convert.ToInt64(User.Identity.GetUserId())).SingleOrDefault();//usrRepository.FindByLogin(model.Email).Role;
-                    return RedirectToAction("Main", String.Format("{0}", role.ToString()));
+                    try
+                    {
+                        var role = UserManager.GetRoles(Convert.ToInt64(User.Identity.GetUserId())).SingleOrDefault();
+                        return RedirectToAction("Main", String.Format("{0}", role.ToString()));
+                    }
+                    catch
+                    {
+                        return RedirectToAction("EnterError", "Account");
+                    }
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -404,7 +419,7 @@ namespace Agency.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
 
         //

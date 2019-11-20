@@ -1,4 +1,5 @@
-﻿using NHibernate;
+﻿using Agency.Models.Models;
+using NHibernate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,17 @@ namespace Agency.Models.Repository
                 base(session)
         {
 
+        }
+
+        public Company GetCompany(string selected)
+        {
+            Company company = new Company();
+            foreach (var c in GetAll())
+            {
+                if (c.CompanyName == selected)
+                    company = c;
+            }
+            return company;
         }
 
     }

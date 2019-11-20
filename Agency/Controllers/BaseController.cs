@@ -13,11 +13,13 @@ namespace Agency.Controllers
     public class BaseController : Controller
     {
         protected UserRepository userRepository;
+        protected ExperienceRepository experienceRepository;
         protected UserManager _userManager;
 
-        public BaseController(UserRepository userRepository)
+        public BaseController(UserRepository userRepository, ExperienceRepository experienceRepository)
         {
             this.userRepository = userRepository;
+            this.experienceRepository = experienceRepository;
         }
 
         public UserManager UserManager
@@ -28,6 +30,21 @@ namespace Agency.Controllers
         public User CurrentUser
         {
             get { return userRepository.GetCurrentUser(User); }
+        }
+
+        public List<SelectListItem> GetExperienceLists()
+        {
+            List<SelectListItem> listItems = new List<SelectListItem>();
+            foreach (var e in experienceRepository.GetAll())
+            {
+                SelectListItem item = new SelectListItem
+                {
+                    Text = e.Skill,
+                    Value = e.Id.ToString()
+                };
+                listItems.Add(item);
+            }
+            return listItems;
         }
 
     }

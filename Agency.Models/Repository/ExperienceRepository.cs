@@ -19,8 +19,26 @@ namespace Agency.Models.Repository
         {
             var crit = session.CreateCriteria<Experience>();
             crit.Add(Restrictions.In("Id", items));
-            SetupFilter(crit, null); //а это нужно? чет сомневаюсь
             return crit.List<Experience>();
         }
+
+        public IList<long> CreateNewExperience(string exp)
+        {
+            List<string> newExp = new List<string>();
+            List<long> experiences = new List<long>();
+            newExp.AddRange(exp.Split(';'));
+            foreach (var e in newExp)
+            {
+                Experience experience = new Experience
+                {
+                    Skill = e
+                };
+                Save(experience);
+                experiences.Add(Find(new BaseFilter { SearchString = e }).FirstOrDefault().Id);
+            }
+            return experiences;
+        }
+
+
     }
 }

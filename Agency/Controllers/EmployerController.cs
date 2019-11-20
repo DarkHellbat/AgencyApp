@@ -11,17 +11,33 @@ using System.Web.Mvc;
 
 namespace Agency.Controllers
 {
-    public class EmployerController : Controller
+    public class EmployerController : BaseController
     {
         private CompanyRepository companyRepository;
         private EmployerRepository employerRepository;
-        private ISession session;
 
-
-        public EmployerController(EmployerRepository employerRepository, CompanyRepository companyRepository, ISession session)
+        public EmployerController(EmployerRepository employerRepository, CompanyRepository companyRepository, ExperienceRepository experienceRepository, UserRepository userRepository)
+            : base(userRepository, experienceRepository)
         {
             this.employerRepository = employerRepository;
+            this.companyRepository = companyRepository;
         }
+
+        public List<SelectListItem> GetCompanies()
+        {
+            List<SelectListItem> selectList = new List<SelectListItem>();
+            foreach (var c in companyRepository.GetAll())
+            {
+                SelectListItem item = new SelectListItem
+                {
+                    Text = c.CompanyName,
+                    Value = c.Id.ToString()
+                };
+                selectList.Add(item);
+            }
+            return selectList;
+        }
+
         public ActionResult Main()
         {
             return View();
@@ -29,30 +45,47 @@ namespace Agency.Controllers
 
         public ActionResult CreateVacancy()
         {
-            return View();
+            var model = new VacancyViewModel
+            {
+                Experience = GetExperienceLists(),
+                Company = GetCompanies() 
+            };
+            return View(model);
         }
 
         [HttpPost]
         public ActionResult CreateVacancy(VacancyViewModel model)
         {
-            var vacancy = new Vacancy 
+            if (ModelState.IsValid)
             {
-                Ends = model.Ends,
-                Starts = model.Starts,
-                VacancyName = model.Name,
-                Status = Status.Active,
-                VacancyDescription = model.Description,
-                //Company = model.CompanyName.FirstOrDefault(),
-                Requirements = model.Experience.SelectedValues as List<Experience>
-            };
-            try
-            {
-                employerRepository.SaveWProcedure(vacancy, Convert.ToInt64(User.Identity.GetUserId()));
-                return RedirectToAction("Main", "employer");
+                List<long> IdList = new List<long>();
+                foreach (var e in model.SelectedExperience)
+                {
+                    IdList.Add(Convert.ToInt64(e));
+                }
+                var vacancy = new Vacancy
+                {
+                    Ends = model.Ends,
+                    Starts = model.Starts,
+                    VacancyName = model.Name,
+                    Status = Status.Active,
+                    VacancyDescription = model.Description,
+                    Company = companyRepository.Load(long.Parse(model.SelectedCompany)),
+                    Requirements = experienceRepository.GetSelectedExperience(IdList)
+                };
+                try
+                {
+                    employerRepository.SaveWProcedure(vacancy, Convert.ToInt64(User.Identity.GetUserId()));
+                    return RedirectToAction("Main", "employer");
+                }
+                catch
+                {
+                    return RedirectToAction("Main", "employer");
+                }
             }
-            catch
+            else
             {
-                return RedirectToAction("Main", "employer");
+                return RedirectToAction("Main");
             }
         }
 
@@ -63,12 +96,23 @@ namespace Agency.Controllers
             foreach (var c in companyRepository.GetAll())
             {
                 items.Add(new SelectListItem { Text = c.CompanyName, Value = c.Id.ToString() });
-
+                if (c == vacancy.Company)
+                {
+                    items.Last().Selected = true;
+                }
             }
+
+            var exp = GetExperienceLists();
+            foreach (SelectListItem e in exp)
+            {
+                if (vacancy.Requirements.Contains(experienceRepository.Load(Convert.ToInt64(e.Value))) == true)
+                    e.Selected = true;
+            }
+
             var model = new VacancyViewModel
             {
-                
-               // CompanyName = vacancy.Company,
+                Experience = exp,
+                Company = items,
                 Description = vacancy.VacancyDescription,
                 Ends = vacancy.Ends,
                 Name = vacancy.VacancyName,
@@ -88,8 +132,8 @@ namespace Agency.Controllers
                 VacancyName = model.Name,
                 Status = Status.Active,
                 VacancyDescription = model.Description,
-                //Company = model.CompanyName.SelectedValue,
-                Requirements = model.Experience.SelectedValues as List<Experience>
+                Company = companyRepository.Load(Convert.ToInt64(model.SelectedCompany)),
+                Creator = UserManager.FindById(Convert.ToInt64(User.Identity.GetUserId())),
             };
             employerRepository.Save(vacancy);
             return RedirectToAction("Main", "employer");

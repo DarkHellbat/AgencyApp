@@ -21,7 +21,8 @@ namespace Agency.Controllers
         private ExperienceRepository experienceRepository;
         private BinaryFileRepository fileRepository;
 
-        public JobseekerController( JobseekerRepository jobseekerRepository, ExperienceRepository experienceRepository, BinaryFileRepository fileRepository, UserRepository userRepository) : base (userRepository)
+        public JobseekerController( JobseekerRepository jobseekerRepository, ExperienceRepository experienceRepository, BinaryFileRepository fileRepository, 
+            UserRepository userRepository) : base (userRepository, experienceRepository)
         {
             this.jobseekerRepository = jobseekerRepository;
             this.experienceRepository = experienceRepository;
@@ -32,24 +33,7 @@ namespace Agency.Controllers
         {
             return View();
         }
-
-        public List<SelectListItem> GetExperienceLists()
-        {
-            List<SelectListItem> listItems = new List<SelectListItem>();
-            foreach (var e in experienceRepository.GetAll())
-            {
-                SelectListItem item = new SelectListItem
-                {
-                    Text = e.Skill,
-                    Value = e.Id.ToString()
-                }; 
-                listItems.Add(item);
-            }
-           return listItems;
-        }
-
-        
-
+  
         public ActionResult CreateProfile()
         {
             var model = new ProfileModel
@@ -61,8 +45,8 @@ namespace Agency.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateProfile(ProfileModel model)
         {
-            //if (ModelState.IsValid)
-            //{
+            if (ModelState.IsValid)
+            {
                 var path = AppDomain.CurrentDomain.BaseDirectory;
                 var file = new BinaryFile
                 {
@@ -74,7 +58,6 @@ namespace Agency.Controllers
             if (!Directory.Exists(file.Path))
             {
                 Directory.CreateDirectory(Path.Combine(path, @"App_Data\Files"));
-                 
             }
             using (var fileStream = System.IO.File.Create(file.Path))
                 {
@@ -83,21 +66,20 @@ namespace Agency.Controllers
                 }
             fileRepository.Save(file);
             List<long> IdList = new List<long>();
-            var request = Request.Form["Experience"];
-
-                foreach (var e in model.Experience)
-            {
-                if (e.Selected == true)
+            if (model.NewExperience!=null)
                 {
-                    IdList.Add(Convert.ToInt64(e.Value));
+                    IdList.AddRange( experienceRepository.CreateNewExperience(model.NewExperience));
                 }
+            foreach (var e in model.SelectedExperience)
+            {
+                IdList.Add(Convert.ToInt64(e));
             }
             Candidate candidate = new Candidate
                 {
                     DateofBirth = model.DateOfBirth,
                     Name = model.Name,
-                    User = UserManager.FindById(Convert.ToInt64(User.Identity.GetUserId())),
                     Experience = experienceRepository.GetSelectedExperience(IdList),
+                    User = UserManager.FindById(Convert.ToInt64(User.Identity.GetUserId())),
                     Avatar = file
                 };
                 try
@@ -110,8 +92,8 @@ namespace Agency.Controllers
                     //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Record Inserted Successfully')", true);
                     return RedirectToAction("Main", "Jobseeker");
                 }
-               
-            //}
+
+            }
             return RedirectToAction("Main", "Jobseeker"); //добавить оповещения
         }
 
@@ -121,20 +103,27 @@ namespace Agency.Controllers
             if (profile!=null)
             {
                 var exp = GetExperienceLists();
-                foreach (SelectListItem e in exp) //profile.Experience)
+                foreach (SelectListItem e in exp)
                 {
-                    if (profile.Experience.Contains(experienceRepository.Load(Convert.ToInt64(e))) == true)
+                    if (profile.Experience.Contains(experienceRepository.Load(Convert.ToInt64(e.Value))) == true)
                         e.Selected = true;
+                }
+                BinaryFile file = new BinaryFile();
+                if (System.IO.File.Exists(profile.Avatar.Path))
+                {
+                      file.Content = System.IO.File.ReadAllBytes(profile.Avatar.Path);
+                    file.ContentType = profile.Avatar.ContentType;
+                    file.Name = profile.Avatar.Name;
+                    file.Path = profile.Avatar.Path;
                 }
                 var model = new ProfileModel
                 {
-                    Experience = GetExperienceLists(),
+                    Experience = exp,
                     DateOfBirth = profile.DateofBirth,
-                    //Experience = exp,
                     Name = profile.Name,
-                    //Photo = profile.Avatar 
-                };           
-                return RedirectToAction("Main", "Jobseeker");
+                    File = file
+                };
+                return View(model);
             }
             else
             {

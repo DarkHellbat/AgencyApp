@@ -17,14 +17,16 @@ namespace Agency.Models
         [DataType(DataType.Date)]
         [Display(Name = "Начало")]
         public DateTime Starts { get; set; }
+        [DataType(DataType.Date)]
         [Display(Name = "Окончание")]
         public DateTime Ends { get; set; }
 
         [Display(Name = "Выберите название компании")]
-        public SelectList Company { get; set; }
+        public List<SelectListItem> Company { get; set; }
+        public string SelectedCompany { get; set; }
         [Display(Name = "Выберите требуемые навыки из списка")]
-        public MultiSelectList Experience { get; set; }
-
+        public List<SelectListItem> Experience { get; set; }
+        public List<string> SelectedExperience { get; set; }
         [DataType(DataType.Text)]
         [Display(Name = "Статус вакансии")]
         public string Status { get; set; }

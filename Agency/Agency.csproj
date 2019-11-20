@@ -399,6 +399,9 @@
     <Content Include="Views\Shared\ShowVacancies.cshtml" />
     <Content Include="Views\Jobseeker\CreateProfile.cshtml" />
     <Content Include="Views\Shared\AccessError.cshtml" />
+    <Content Include="Views\Jobseeker\EditProfile.cshtml" />
+    <Content Include="Views\Account\EnterError.cshtml" />
+    <Content Include="Views\Employer\CreateVacancy.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
