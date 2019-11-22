@@ -33,14 +33,15 @@ namespace Agency.Models
 
         [Display(Name = "Если ваших навыков нет в списке, введите их через ;")]
         public string NewExperience { get; set; }
+}
 
-    public class VacancyListViewModel : EntityModel<List<Vacancy>>
-    {
-        public IList<Vacancy> Vacancies { get; set; }
-        public Role Role { get; set; }
-        public VacancyListViewModel()
+        public class VacancyListViewModel : EntityModel<List<Vacancy>>
         {
-            Vacancies = new List<Vacancy>();
+            public IList<Vacancy> Vacancies { get; set; }
+            public Role Role { get; set; }
+            public VacancyListViewModel()
+            {
+                Vacancies = new List<Vacancy>();
+            }
         }
     }
-}

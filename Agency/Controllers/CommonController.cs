@@ -53,10 +53,8 @@ namespace Agency.Controllers
                     {
                         model.Vacancies = employerRepository.GetAllWithSort(options);
                         return View(model);
-                    }
-                   
+                    }                   
             }
-
             return View();
         }
 
