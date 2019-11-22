@@ -17,8 +17,8 @@ namespace Agency.Extensions
                 case "Admin":
                     role = Models.Role.Admin;
                     break;
-                case "Employee":
-                    role = Models.Role.Employee;
+                case "Employer":
+                    role = Models.Role.Employer;
                     break;
                 case "Jobseeker":
                     role = Models.Role.Jobseeker;

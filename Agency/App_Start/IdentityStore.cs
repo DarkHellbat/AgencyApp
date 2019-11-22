@@ -29,6 +29,7 @@ namespace Agency.App_Start
         #region IUserStore<User, int>
         public Task CreateAsync(User user)
         {
+            //AddToRoleAsync(user, user.Role.ToString());
             return Task.Run(() => session.SaveOrUpdate(user));
         }
 
@@ -152,7 +153,7 @@ namespace Agency.App_Start
         public Task AddToRoleAsync(User user, string roleName) //реализация интерфейса IUserRoleStore
         {
             user.Role = RoleExtensions.RoleCheck(roleName);
-            return Task.Run(() => session.SaveOrUpdate(user));
+            return Task.Run(() => session.SaveOrUpdate(user));//session.Flush()); 
         }
 
         public Task RemoveFromRoleAsync(User user, string roleName)

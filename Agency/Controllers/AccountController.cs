@@ -21,15 +21,16 @@ namespace Agency.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private UserManager _userManager;
-        private UserRepository usrRepository;
+
         public AccountController()
         {
+
         }
 
-        public AccountController(UserManager userManager, ApplicationSignInManager signInManager, UserRepository userRepository)         {
+        public AccountController(UserManager userManager, ApplicationSignInManager signInManager)
+        {
             UserManager = userManager;
             SignInManager = signInManager;
-            this.usrRepository = userRepository;
         }
 
         public ApplicationSignInManager SignInManager
@@ -56,6 +57,17 @@ namespace Agency.Controllers
             }
         }
 
+        /// <summary>
+        /// Метод для перебрасывания в случае проблем со входом
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult EnterError()
+        {
+            ViewBag.Message = @"Кажется, возникли проблемы со входом. Попробуйте перезапустить приложение 
+                                или выйти из учетной записи и зайти снова";
+            return View();
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]
@@ -64,7 +76,12 @@ namespace Agency.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
-
+        /// <summary>
+        /// Стандартный метод доработан с учетом ролей
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         //
         // POST: /Account/Login
         [HttpPost]
@@ -83,8 +100,16 @@ namespace Agency.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    var role = usrRepository.FindByLogin(model.Email).Role;
-                    return RedirectToAction("Main", String.Format("{0}", role.ToString()));
+                    try
+                    {
+                        var role = UserManager.GetRoles(Convert.ToInt64(User.Identity.GetUserId())).SingleOrDefault();
+                        //иногда возникает проблема с созданием UserManager. Выглядит как проблема из коробки. Но оно работает само по себе
+                        return RedirectToAction("Main", String.Format("{0}", role.ToString()));
+                    }
+                    catch
+                    {
+                        return RedirectToAction("Redirect", "Common");
+                    }
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -146,7 +171,11 @@ namespace Agency.Controllers
         {
             return View();
         }
-
+        /// <summary>
+        /// Стандартный метод для регистрации, дополнен с учетом наличия ролей
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         //
         // POST: /Account/Register
         [HttpPost]
@@ -157,12 +186,12 @@ namespace Agency.Controllers
             if (ModelState.IsValid)
             {
                 
-                var user = new User { UserName = model.Email,  Password = model.Password, Status = Status.Active}; //
+                var user = new User { UserName = model.Email,  Password = model.Password, Status = Status.Active, Role = model.Role}; 
                 var result = await UserManager.CreateAsync(user, model.Password);
-               
+                var r = await UserManager.AddToRoleAsync(user.Id, model.Role.ToString()); 
 
-                try
-                {
+                //try
+                //{
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -171,12 +200,8 @@ namespace Agency.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    _userManager.AddToRoleAsync(user.Id, model.Role.ToString()); 
+                   
                     return RedirectToAction("Main", String.Format("{0}", model.Role.ToString()));
-                }
-                catch
-                { }
-                //AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
@@ -403,7 +428,7 @@ namespace Agency.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
 
         //

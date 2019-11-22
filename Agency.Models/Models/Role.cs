@@ -8,7 +8,7 @@ namespace Agency.Models
 {
     public enum Role
     {
-        Employee,
+        Employer,
         Jobseeker,
         Admin,
         None

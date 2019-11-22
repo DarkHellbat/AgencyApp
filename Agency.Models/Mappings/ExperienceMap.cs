@@ -15,6 +15,8 @@ namespace Agency.Models.Mappings
             Id(e => e.Id).GeneratedBy.Identity();
             Map(e => e.Skill);
             Map(e => e.Duration);
-         }
+            HasManyToMany(e => e.Candidates).Inverse().Table("CandidateExperience");
+            HasManyToMany(e => e.Vacancies).Inverse().Table("VacancyExperience");
+        }
     }
 }

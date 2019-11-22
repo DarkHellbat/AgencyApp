@@ -11,6 +11,7 @@ using Microsoft.Owin.Security;
 using Agency.Models;
 using Agency.Models.Models;
 using NHibernate;
+using Agency.App_Start;
 
 namespace Agency
 {
@@ -42,7 +43,7 @@ namespace Agency
 
         public static UserManager Create(IdentityFactoryOptions<UserManager> options, IOwinContext context)
         {
-            var manager = new UserManager(new App_Start.IdentityStore(context.Get<ISession>()));
+            var manager = new UserManager(new IdentityStore(context.Get<ISession>()));
             // Configure validation logic for usernames
             manager.UserValidator = new UserValidator<User, long>(manager)
             {
@@ -54,10 +55,10 @@ namespace Agency
             manager.PasswordValidator = new PasswordValidator
             {
                 RequiredLength = 6,
-                RequireNonLetterOrDigit = true,
-                RequireDigit = true,
-                RequireLowercase = true,
-                RequireUppercase = true,
+                //RequireNonLetterOrDigit = true,
+                //RequireDigit = true,
+                //RequireLowercase = true,
+                //RequireUppercase = true,
             };
 
             // Configure user lockout defaults
@@ -87,7 +88,8 @@ namespace Agency
             return manager;
         }
     }
-        // Configure the application sign-in manager which is used in this application.
+
+    // Configure the application sign-in manager which is used in this application.
     public class ApplicationSignInManager : SignInManager<User, long>
     {
         public ApplicationSignInManager(UserManager userManager, IAuthenticationManager authenticationManager)

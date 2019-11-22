@@ -15,6 +15,6 @@ namespace Agency.Models.Models
         [Display(Name = "Фото")]
         public virtual User User { get; set; }
         public virtual BinaryFile Avatar { get; set; }
-        public virtual List<Experience> Experience { get; set; }
+        public virtual IList<Experience> Experience { get; set; }
     }
 }

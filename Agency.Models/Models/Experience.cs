@@ -12,5 +12,7 @@ namespace Agency.Models.Models
         public virtual long Id { get; set; }
         public virtual string Skill { get; set; }
         public virtual long Duration { get; set; }
+        public virtual IList<Candidate> Candidates { get; set; }
+        public virtual IList<Vacancy> Vacancies { get; set; }
     }
 }

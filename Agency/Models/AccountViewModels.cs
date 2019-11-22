@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Agency.Models.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Agency.Models
@@ -62,8 +63,18 @@ namespace Agency.Models
         public bool RememberMe { get; set; }
     }
 
-    public class RegisterViewModel
+    public class UserListViewModel : EntityModel<List<User>>
     {
+        public IList<User> Users { get; set; }
+        public UserListViewModel()
+        {
+            Users = new List<User>();
+        }
+    }
+
+    public class RegisterViewModel : EntityModel<User>
+    {
+        
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -79,6 +90,9 @@ namespace Agency.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "Ваш номер телефона")]
+        public long PhoneNumber { get; set; }
 
         [Required]
         [Display(Name = "Что вы ищете?")]

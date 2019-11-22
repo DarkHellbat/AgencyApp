@@ -1,5 +1,4 @@
-﻿using Agency.Models.Filters;
-using Agency.Models.Models;
+﻿using Agency.Models.Models;
 using NHibernate;
 using System;
 using System.Collections.Generic;
@@ -9,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace Agency.Models.Repository
 {
-    public class BinaryFileRepository : Repository<BinaryFile, BinaryFileFilter>
-    {
-        public BinaryFileRepository(ISession session) : base(session)
+    public class BinaryFileRepository : Repository<BinaryFile, Filters.BaseFilter>
         {
+            public BinaryFileRepository(ISession session) :
+                    base(session)
+            {
+
+            }
         }
-    }
 }
