@@ -17,7 +17,13 @@ namespace Agency.Models.Repository
         {
 
         }
-
+        /// <summary>
+        /// Метод ищет все вакансии конкретного HR с учетом фильтра
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="filter"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public IList<Vacancy> ShowMyVacancies(long userId, VacancyFilter filter ,FetchOptions options)
         {
             var crit = session.CreateCriteria<Vacancy>();
@@ -30,7 +36,12 @@ namespace Agency.Models.Repository
             return crit.List<Vacancy>();
             
         }
-
+        /// <summary>
+        /// Метод для сохранения новой вакансии
+        /// </summary>
+        /// <param name="vacancy"></param>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         public long SaveWProcedure(Vacancy vacancy, long Id)
         {
             var query = session.CreateSQLQuery("exec sp_InsertVacancy :VacancyName, :VacancyDescription, :Starts, :Ends, :User_id, :Status, :Company_id")
@@ -48,11 +59,19 @@ namespace Agency.Models.Repository
             //здесь нет опыта, потому что нужно передавать множественный параметр. Делается оно через XML, но я пока такое не умею
             //Опыт записывается через апдейт, который идет после
         }
-
+        /// <summary>
+        /// Метод задает критерии поиска вакансий по фильтру
+        /// </summary>
+        /// <param name="crit"></param>
+        /// <param name="filter"></param>
         public override void SetupFilter(ICriteria crit, VacancyFilter filter)
         {
             if (filter != null)
             {
+                if (filter.SearchString != null)
+                {
+                    crit.Add(Restrictions.Like("VacancyName", filter.SearchString, MatchMode.Anywhere));
+                }
                 if (filter.Experience != null)
                 {
                     List<long> exp = new List<long>();
@@ -74,7 +93,7 @@ namespace Agency.Models.Repository
                         crit.Add(Restrictions.Le("Starts", filter.StartDateRange.To.Value));
                     }
                 }
-                if (filter.CompanyName!=null)
+                if (filter.CompanyName.Id!=0)
                 {
                     crit.Add(Restrictions.Eq("Company.id", filter.CompanyName.Id));
                 }
@@ -98,7 +117,11 @@ namespace Agency.Models.Repository
                 }
             }
         }
-
+        /// <summary>
+        /// Получает вакансии с учетом фильтрации
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public IList<Vacancy> GetVacanciesFiltered(VacancyFilter filter)
         {
             var crit = session.CreateCriteria<Vacancy>();
@@ -106,7 +129,11 @@ namespace Agency.Models.Repository
             
             return crit.List<Vacancy>();
         }
-
+        /// <summary>
+        /// Метод создает критерий для поиска подходящей вакансии
+        /// </summary>
+        /// <param name="experiences"></param>
+        /// <returns></returns>
         public IList<Vacancy> FindSuitableVacancy(List<long> experiences)
         {
             var crit = session.CreateCriteria<Vacancy>()

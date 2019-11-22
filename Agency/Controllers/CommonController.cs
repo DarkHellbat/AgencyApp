@@ -30,7 +30,12 @@ namespace Agency.Controllers
             //иногда возникает проблема с созданием UserManager. Выглядит как проблема из коробки. Но оно работает само по себе
             return RedirectToAction("Main", String.Format("{0}", role.ToString()));
         }
-
+        /// <summary>
+        /// Метод отображает необходимые вакансии для различных ролей
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public ActionResult ShowVacancies(VacancyFilter filter, FetchOptions options)
         {
             var model = new VacancyListViewModel
@@ -57,7 +62,12 @@ namespace Agency.Controllers
             }
             return View();
         }
-
+        /// <summary>
+        /// Метод отображает список анкет
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public ActionResult ShowCandidates(JobseekersFilter filter, FetchOptions options)
         {
             var model = new ProfileListViewModel
@@ -77,8 +87,14 @@ namespace Agency.Controllers
 
             return View();
         }
-
-        public ActionResult GetSelectedItems(string selectedCompany, string selectedExperience)
+        /// <summary>
+        /// метод для получения вакансий, соответствующих критериям поиска
+        /// </summary>
+        /// <param name="selectedCompany"></param>
+        /// <param name="selectedExperience"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public ActionResult GetSelectedItems(string selectedCompany, string selectedExperience, string name)
         {
             if (long.TryParse(selectedCompany, out long company) != true)
             {
@@ -100,7 +116,8 @@ namespace Agency.Controllers
             VacancyFilter filter = new VacancyFilter
             {
                 CompanyName = companyRepository.Load(company),
-                Experience = experiences
+                Experience = experiences,
+                SearchString = name
 
             };
             IList<Vacancy> vacancies = employerRepository.GetVacanciesFiltered(filter);

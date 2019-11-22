@@ -18,7 +18,6 @@
                 <td>
                     @Html.SortLink("Компания", "Company", "ShowVacancies", "Common", new RouteValueDictionary { { "Id", Model.Vacancies[0].Creator.Id } })
                 </td>
-                //а черт его знает, нужна ли сортировка по опыту, но пусть пока будет
                 <td>
                     @Html.SortLink("Требуемый опыт", "Requirements", "ShowVacancies", "Common", new RouteValueDictionary { })
                 </td>

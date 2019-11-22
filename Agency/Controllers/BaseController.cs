@@ -31,8 +31,12 @@ namespace Agency.Controllers
         {
             get { return userRepository.GetCurrentUser(User); }
         }
-
-        public List<SelectListItem> GetExperienceLists()
+        /// <summary>
+        /// Метод для получения списка опыта. Позволяет преобразовать Experience в SelectListItem
+        /// для дальнейшей работы
+        /// </summary>
+        /// <returns></returns>
+        public List<SelectListItem> GetExperienceLists() 
         {
             List<SelectListItem> listItems = new List<SelectListItem>();
             foreach (var e in experienceRepository.GetAll())

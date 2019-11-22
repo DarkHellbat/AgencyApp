@@ -17,22 +17,12 @@ namespace Agency.Models.Repository
             {
           
             }
-        public override void SetupFilter(ICriteria crit, JobseekersFilter filter)
-        {
-            if (filter != null)
-            {
-                if (filter.Experience!=null)
-                {
-                    List<long> exp = new List<long>();
-                    foreach (var e in filter.Experience)
-                    {
-                        exp.Add(e.Id);
-                    }
-                    crit.Add(Restrictions.In("Id", exp));
-                }
-                
-            }
-        }
+
+        /// <summary>
+        /// Метод осуществляет поиск анкеты текущего пользователя
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
 
         public Candidate FindProfile (long userId)
         {
@@ -40,7 +30,11 @@ namespace Agency.Models.Repository
             crit.Add(Restrictions.Eq("User.Id", userId));
             return crit.List<Candidate>().FirstOrDefault();
         }
-
+        /// <summary>
+        /// Метод находит соискателя, подходящего под параметры вакансии
+        /// </summary>
+        /// <param name="experiences"></param>
+        /// <returns></returns>
         public IList<Candidate> FindSuitableCandidate(List<long> experiences)
         {
             var crit = session.CreateCriteria<Candidate>()

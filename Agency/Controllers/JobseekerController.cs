@@ -33,7 +33,10 @@ namespace Agency.Controllers
         {
             return View();
         }
-  
+  /// <summary>
+  /// Метод для создания новой анкеты
+  /// </summary>
+  /// <returns></returns>
         public ActionResult CreateProfile()
         {
             var model = new ProfileModel
@@ -104,7 +107,10 @@ namespace Agency.Controllers
             }
             return RedirectToAction("Main", "Jobseeker"); //добавить оповещения
         }
-
+        /// <summary>
+        /// Метод изменяет анкету текущего пользователя
+        /// </summary>
+        /// <returns></returns>
         public ActionResult EditProfile()
         {
             var profile = jobseekerRepository.FindProfile(Convert.ToInt64(User.Identity.GetUserId()));
@@ -199,7 +205,10 @@ namespace Agency.Controllers
             }
             return RedirectToAction("Main", "Jobseeker"); //добавить оповещения
         }
-
+        /// <summary>
+        /// Позволяет соискателю найти подходящую вакансию
+        /// </summary>
+        /// <returns></returns>
         public ActionResult FindVacancy()
         {
             var exp = jobseekerRepository.FindProfile(long.Parse(User.Identity.GetUserId())).Experience;

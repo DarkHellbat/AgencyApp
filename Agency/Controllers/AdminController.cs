@@ -25,7 +25,11 @@ namespace Agency.Controllers
         }
 
         
-
+        /// <summary>
+        /// Метод для отображения списка пользователей
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public ActionResult ShowUsers(FetchOptions options)
         {
             var model = new UserListViewModel
@@ -35,7 +39,11 @@ namespace Agency.Controllers
 
             return View(model);
         }
-
+        /// <summary>
+        /// Метод передает во вью данные о пользователе для его изменения
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         public ActionResult EditUser(long Id)
         {
             var current = userRepository.Load(Id);
@@ -64,7 +72,10 @@ namespace Agency.Controllers
             userRepository.Save(user);
             return RedirectToAction("ShowUsers", "Admin");
         }
-
+        /// <summary>
+        /// Метод для блокировки пользователей
+        /// </summary>
+        /// <returns></returns>
         public ActionResult ChangeStatus()
         {
             var Id = Convert.ToInt64(User.Identity.GetUserId());
@@ -72,14 +83,10 @@ namespace Agency.Controllers
             if (user.Status == Status.Active)
             {
                 user.Status = Status.Blocked;
-                //UserManager.RemoveFromRole(Id, "Active");
-                //UserManager.AddToRole(Id, "Blocked");
             }
             else
             {
                 user.Status = Status.Active;
-                //UserManager.RemoveFromRole(Id, "Blocked");
-                //UserManager.AddToRole(Id, "Active");
             }
             userRepository.Save(user);
             return RedirectToAction("Main", "Admin");

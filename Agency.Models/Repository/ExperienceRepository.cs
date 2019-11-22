@@ -15,13 +15,22 @@ namespace Agency.Models.Repository
         public ExperienceRepository(ISession session) : base(session)
         {
         }
+        /// <summary>
+        /// Метод получает выбранный опыт
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
         public IList<Experience> GetSelectedExperience(List<long> items)
         {
             var crit = session.CreateCriteria<Experience>();
             crit.Add(Restrictions.In("Id", items));
             return crit.List<Experience>();
         }
-
+        /// <summary>
+        /// Метод для создания нового пункта опыта путем ввода его текста
+        /// </summary>
+        /// <param name="exp"></param>
+        /// <returns></returns>
         public IList<long> CreateNewExperience(string exp)
         {
             List<string> newExp = new List<string>();

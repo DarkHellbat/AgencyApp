@@ -24,7 +24,10 @@ namespace Agency.Controllers
             this.companyRepository = companyRepository;
             this.jobseekerRepository = jobseekerRepository;
         }
-
+        /// <summary>
+        /// Метод для формирования списка компаний
+        /// </summary>
+        /// <returns></returns>
         public List<SelectListItem> GetCompanies()
         {
             List<SelectListItem> selectList = new List<SelectListItem>();
@@ -44,7 +47,10 @@ namespace Agency.Controllers
         {
             return View();
         }
-
+        /// <summary>
+        /// Метод для создания новой вакансии
+        /// </summary>
+        /// <returns></returns>
         public ActionResult CreateVacancy()
         {
             var model = new VacancyViewModel
@@ -53,12 +59,8 @@ namespace Agency.Controllers
                 Company = GetCompanies() 
             };
             return View(model);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
+        } 
+
         [HttpPost]
         public ActionResult CreateVacancy(VacancyViewModel model)
         {
@@ -106,7 +108,11 @@ namespace Agency.Controllers
                 return RedirectToAction("Main");
             }
         }
-
+        /// <summary>
+        /// Метод для изменения выбранной вакансии
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         public ActionResult EditVacancy(long Id)
         {
             var vacancy = employerRepository.Load(Id);
@@ -165,6 +171,11 @@ namespace Agency.Controllers
             return RedirectToAction("Main", "employer");
         }
 
+        /// <summary>
+        /// Метод позволяет открыть или закрыть выбранную вакансию
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         public ActionResult ChangeStatus(long Id)
         {
             Vacancy vacancy = employerRepository.Load(Id);
@@ -175,7 +186,10 @@ namespace Agency.Controllers
             employerRepository.Save(vacancy);
             return RedirectToAction("ShowVacancies", "common"); 
         }
-
+        /// <summary>
+        /// Метод формирует список компаний для передачи в представление фильтра
+        /// </summary>
+        /// <returns></returns>
         public ActionResult FillCompany()
         {
             var list = companyRepository.GetAll()
@@ -184,7 +198,10 @@ namespace Agency.Controllers
                         .ToList();
             return Json(list, JsonRequestBehavior.AllowGet);
         }
-
+        /// <summary>
+        /// Метод формирует список опыта для передачи в представление фильтра
+        /// </summary>
+        /// <returns></returns>
         public ActionResult FillExperience()
         {
             var list = experienceRepository.GetAll()
@@ -193,7 +210,11 @@ namespace Agency.Controllers
                         .ToList();
             return Json(list, JsonRequestBehavior.AllowGet);
         }
-
+        /// <summary>
+        /// Позволяет HR найти анкету, подходящую по параметрам вакансии
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         public ActionResult FindCandidate(long Id)
         {
             var exp = employerRepository.Load(Id).Requirements;

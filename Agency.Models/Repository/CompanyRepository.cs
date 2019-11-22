@@ -16,7 +16,11 @@ namespace Agency.Models.Repository
         {
 
         }
-
+        /// <summary>
+        /// Метод получает значение компании по ее названию
+        /// </summary>
+        /// <param name="selected"></param>
+        /// <returns></returns>
         public Company GetCompany(string selected)
         {
             var crit = session.CreateCriteria<Company>();

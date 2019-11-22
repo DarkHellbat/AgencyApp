@@ -57,7 +57,10 @@ namespace Agency.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Метод для перебрасывания в случае проблем со входом
+        /// </summary>
+        /// <returns></returns>
         public ActionResult EnterError()
         {
             ViewBag.Message = @"Кажется, возникли проблемы со входом. Попробуйте перезапустить приложение 
@@ -73,7 +76,12 @@ namespace Agency.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
-
+        /// <summary>
+        /// Стандартный метод доработан с учетом ролей
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         //
         // POST: /Account/Login
         [HttpPost]
@@ -163,7 +171,11 @@ namespace Agency.Controllers
         {
             return View();
         }
-
+        /// <summary>
+        /// Стандартный метод для регистрации, дополнен с учетом наличия ролей
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         //
         // POST: /Account/Register
         [HttpPost]
@@ -190,10 +202,6 @@ namespace Agency.Controllers
 
                    
                     return RedirectToAction("Main", String.Format("{0}", model.Role.ToString()));
-                //}
-                //catch (Exception ex)
-                //{ }
-                //AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form

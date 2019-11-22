@@ -21,6 +21,12 @@ namespace Agency.Models.Repository
             base(session)
         {
         }
+
+        /// <summary>
+        /// Метод осуществляет поиск пользователя по его логину
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
         public User FindByLogin(string login)
         {
             var crit = session.CreateCriteria<User>();
@@ -35,17 +41,11 @@ namespace Agency.Models.Repository
                 return user;
             }
         }
-
-        //public User CreateUser(User user)
-        //{
-        //    var createUser = String.Format("INSERT INTO [User] (UserName, Password, Role, Status) VALUES ( {0}, {1}, {2}, {3}) SELECT SCOPE_IDENTITY() ", user.UserName, user.Password.GetHashCode(), user.Role, Status.Active);
-        //    var result = session.CreateSQLQuery(createUser);//container.Resolve<ISession>()
-        //    var a = result;
-        //    result.ExecuteUpdate();
-        //    return result.;
-
-        //}
-
+/// <summary>
+/// Позволяет получить текущего пользователя
+/// </summary>
+/// <param name="user"></param>
+/// <returns></returns>
         public User GetCurrentUser(IPrincipal user = null)
         {
             user = user ?? (HttpContext.Current != null ? HttpContext.Current.User : Thread.CurrentPrincipal);

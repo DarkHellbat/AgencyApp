@@ -13,6 +13,16 @@ namespace Agency.Extensions
 {
     public static class HtmlExtensions
     {
+        /// <summary>
+        /// Хелпер для сортировки
+        /// </summary>
+        /// <param name="html"></param>
+        /// <param name="linkText"></param>
+        /// <param name="sortExpression"></param>
+        /// <param name="actionName"></param>
+        /// <param name="controllerName"></param>
+        /// <param name="routeValues"></param>
+        /// <returns></returns>
         public static MvcHtmlString SortLink(this HtmlHelper html,
             string linkText,
             string sortExpression,
@@ -45,7 +55,12 @@ namespace Agency.Extensions
                 LinkText = linkText
             });
         }
-
+        /// <summary>
+        /// Метод осуществляет проверку типа файла
+        /// </summary>
+        /// <param name="html"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
         public static bool IsImage(this HtmlHelper html, BinaryFile file)
         {
             if (string.IsNullOrEmpty(file.ContentType))
