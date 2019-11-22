@@ -1,5 +1,6 @@
 ﻿using Agency.Models.Models;
 using NHibernate;
+using NHibernate.Criterion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +19,9 @@ namespace Agency.Models.Repository
 
         public Company GetCompany(string selected)
         {
-            Company company = new Company();
-            foreach (var c in GetAll())
-            {
-                if (c.CompanyName == selected)
-                    company = c;
-            }
-            return company;
+            var crit = session.CreateCriteria<Company>();
+            crit.Add(Restrictions.Eq("Company.CompanyName", selected));
+            return crit.List<Company>().FirstOrDefault();
         }
 
     }

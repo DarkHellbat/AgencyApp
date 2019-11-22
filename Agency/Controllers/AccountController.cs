@@ -100,7 +100,7 @@ namespace Agency.Controllers
                     }
                     catch
                     {
-                        return RedirectToAction("EnterError", "Account");
+                        return RedirectToAction("Redirect", "Common");
                     }
                 case SignInStatus.LockedOut:
                     return View("Lockout");

@@ -23,10 +23,12 @@ namespace Agency.Models.Repository
             {
                 if (filter.Experience!=null)
                 {
-                    foreach (var restriction in filter.Experience)
+                    List<long> exp = new List<long>();
+                    foreach (var e in filter.Experience)
                     {
-                        crit.Add(Restrictions.IdEq(filter.Experience));
+                        exp.Add(e.Id);
                     }
+                    crit.Add(Restrictions.In("Id", exp));
                 }
                 
             }
@@ -37,6 +39,14 @@ namespace Agency.Models.Repository
             var crit = session.CreateCriteria<Candidate>();
             crit.Add(Restrictions.Eq("User.Id", userId));
             return crit.List<Candidate>().FirstOrDefault();
+        }
+
+        public IList<Candidate> FindSuitableCandidate(List<long> experiences)
+        {
+            var crit = session.CreateCriteria<Candidate>()
+                .CreateAlias("Experience", "CandidateExperience")
+                .Add(Restrictions.In("CandidateExperience.id", experiences));
+            return crit.List<Candidate>();
 
         }
 

@@ -16,15 +16,15 @@ namespace Agency.Controllers
 {
     public class JobseekerController : BaseController
     {
-        private UserManager userManager;
         private JobseekerRepository jobseekerRepository;
-        private ExperienceRepository experienceRepository;
         private BinaryFileRepository fileRepository;
+        private EmployerRepository employerRepository;
 
-        public JobseekerController( JobseekerRepository jobseekerRepository, ExperienceRepository experienceRepository, BinaryFileRepository fileRepository, 
+        public JobseekerController(EmployerRepository employerRepository, JobseekerRepository jobseekerRepository, ExperienceRepository experienceRepository, BinaryFileRepository fileRepository, 
             UserRepository userRepository) : base (userRepository, experienceRepository)
         {
             this.jobseekerRepository = jobseekerRepository;
+            this.employerRepository = employerRepository;
             this.experienceRepository = experienceRepository;
             this.fileRepository = fileRepository;
         }
@@ -50,21 +50,22 @@ namespace Agency.Controllers
                 var path = AppDomain.CurrentDomain.BaseDirectory;
                 var file = new BinaryFile
                 {
-                    Name = model.Photo.FileName,
+                    Name = DateTime.Now.ToString().Replace("/", "_").Replace(":", "_") + model.Photo.FileName,
                     Path = Path.Combine(path, @"App_Data\Files", DateTime.Now.ToString().Replace("/", "_").Replace(":", "_") + model.Photo.FileName),
-                    //Content = model.Photo.InputStream.ToByteArray(),
                     ContentType = model.Photo.ContentType
                 };
-            if (!Directory.Exists(file.Path))
-            {
-                Directory.CreateDirectory(Path.Combine(path, @"App_Data\Files"));
-            }
-            using (var fileStream = System.IO.File.Create(file.Path))
+                if (!Directory.Exists(file.Path))
+                {
+                    Directory.CreateDirectory(Path.Combine(path, @"App_Data\Files"));
+                }
+                using (var fileStream = System.IO.File.Create(file.Path))
                 {
                     model.Photo.InputStream.Seek(0, System.IO.SeekOrigin.Begin);
                     model.Photo.InputStream.CopyTo(fileStream);
                 }
-            fileRepository.Save(file);
+                //fileRepository.CreateFile(path, file, stream);
+               
+                fileRepository.Save(file);
             List<long> IdList = new List<long>();
             if (model.NewExperience!=null)
                 {
@@ -97,7 +98,7 @@ namespace Agency.Controllers
             return RedirectToAction("Main", "Jobseeker"); //добавить оповещения
         }
 
-        public ActionResult EditProfile ()
+        public ActionResult EditProfile()
         {
             var profile = jobseekerRepository.FindProfile(Convert.ToInt64(User.Identity.GetUserId()));
             if (profile!=null)
@@ -109,15 +110,17 @@ namespace Agency.Controllers
                         e.Selected = true;
                 }
                 BinaryFile file = new BinaryFile();
-                if (System.IO.File.Exists(profile.Avatar.Path))
+                if (profile.Avatar != null && System.IO.File.Exists(profile.Avatar.Path))
                 {
-                      file.Content = System.IO.File.ReadAllBytes(profile.Avatar.Path);
+                    file.Content = System.IO.File.ReadAllBytes(profile.Avatar.Path);
                     file.ContentType = profile.Avatar.ContentType;
                     file.Name = profile.Avatar.Name;
                     file.Path = profile.Avatar.Path;
                 }
                 var model = new ProfileModel
                 {
+                    Entity = profile,
+                    Id = profile.Id,
                     Experience = exp,
                     DateOfBirth = profile.DateofBirth,
                     Name = profile.Name,
@@ -131,31 +134,49 @@ namespace Agency.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> EditProfile(ProfileModel model)
+        public ActionResult EditProfile(ProfileModel model)
         {
             if (ModelState.IsValid)
             {
-                var file = new BinaryFile()
+                
+                List<long> IdList = new List<long>();
+                foreach (var e in model.SelectedExperience)
                 {
-                    Name = model.Photo.FileName,
-                    //Content = model.Photo.InputStream.ToByteArray(),
-                    ContentType = model.Photo.ContentType
-                };
-
-                Candidate candidate = new Candidate
+                    IdList.Add(Convert.ToInt64(e));
+                }
+                if (model.NewExperience != null)
                 {
+                    IdList.AddRange(experienceRepository.CreateNewExperience(model.NewExperience));
+                }
+                
+                var candidate = new Candidate
+                {
+                    Id = model.Id,
                     DateofBirth = model.DateOfBirth,
                     Name = model.Name,
-                    User = await userManager.FindByIdAsync(Convert.ToInt64(User.Identity.GetUserId())),
-                    Avatar = file
+                    User = UserManager.FindById(Convert.ToInt64(User.Identity.GetUserId())),
+                    Experience = experienceRepository.GetSelectedExperience(IdList)
                 };
-                foreach (var e in model.Experience)
+                if (model.Photo != null)
                 {
-                    if (e.Selected == true)
+                    var path = AppDomain.CurrentDomain.BaseDirectory;
+                    var file = new BinaryFile()
                     {
-                        Experience experience = experienceRepository.Load(Convert.ToInt64(e.Value)); //оно сработает???
-                        candidate.Experience.Add(experience);
+                        Name = model.Photo.FileName,
+                        Path = Path.Combine(path, @"App_Data\Files", DateTime.Now.ToString().Replace("/", "_").Replace(":", "_") + model.Photo.FileName),
+                        ContentType = model.Photo.ContentType
+                    };
+                    if (!Directory.Exists(file.Path))
+                    {
+                        Directory.CreateDirectory(Path.Combine(path, @"App_Data\Files"));
                     }
+                    using (var fileStream = System.IO.File.Create(file.Path))
+                    {
+                        model.Photo.InputStream.Seek(0, System.IO.SeekOrigin.Begin);
+                        model.Photo.InputStream.CopyTo(fileStream);
+                    }
+                    fileRepository.Save(file);
+                    candidate.Avatar = file;
                 }
                 try
                 {
@@ -171,5 +192,21 @@ namespace Agency.Controllers
             }
             return RedirectToAction("Main", "Jobseeker"); //добавить оповещения
         }
+
+        public ActionResult FindVacancy()
+        {
+            var exp = jobseekerRepository.FindProfile(long.Parse(User.Identity.GetUserId())).Experience;
+            List<long> list = new List<long>();
+            foreach (var e in exp)
+            {
+                list.Add(e.Id);
+            }
+            var model = new VacancyListViewModel
+            {
+                Vacancies = employerRepository.FindSuitableVacancy(list)
+            };
+
+            return View("ShowVacancies", "", model);
         }
+    }
 }

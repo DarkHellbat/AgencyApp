@@ -208,6 +208,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Extensions\HtmlExtensions.cs" />
     <Compile Include="Extensions\RoleExtensions.cs" />
+    <Compile Include="Extensions\SelectHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -405,6 +406,8 @@
     <Content Include="Views\Admin\ShowUsers.cshtml" />
     <Content Include="Views\Shared\VacancyFilter.cshtml" />
     <Content Include="Views\Shared\EditUser.cshtml" />
+    <Content Include="Views\Employer\EditVacancy.cshtml" />
+    <Content Include="Views\Employer\FindCandidate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

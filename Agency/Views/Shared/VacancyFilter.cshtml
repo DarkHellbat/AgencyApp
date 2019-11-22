@@ -1,0 +1,96 @@
+﻿@model Agency.Models.Filters.VacancyFilter
+
+@using (Html.BeginForm("ShowVacancies", "Common", FormMethod.Get))
+{
+    <div>
+        @* Название: @Html.CheckBoxFor(m => m.Statuses)*@
+    </div>
+    <div>
+        Диапазон начала: @Html.EditorFor(m => m.StartDateRange)
+    </div>
+    <div>
+        Диапазон окончания: @Html.EditorFor(m => m.EndDateRange)
+    </div>
+    <div>
+        Компания:@* @Html.DropDownListFor(Model => Model.CompanyName, new SelectListItem { Text = "Выберите компанию", Value = "0" })*@
+        <select class="form-control" id="CompanyName" name="CompanyName">
+            <option>Выберите компанию</option>
+        </select>
+        <select name="Model" id="Model"></select>
+    </div>
+    <div>
+        <select class="form-control" id="Experience" name="Experience">
+            <option>Выберите компанию</option>
+        </select>
+        <select name="Model2" id="Model2"></select>
+        @* @Html.ListBoxFor(model => model.SelectedExperience, new List<SelectListItem> , new { size = 8 })*@
+    </div>
+
+    <div>
+        Со статусами: 
+        <label>Активно</label>
+        @Html.CheckBox("Active", false)
+        <label>Закрыто</label>
+        @Html.CheckBox("Blocked", false)
+    </div>
+
+    <div>
+        <input type="submit" value="Поиск" />
+    </div>
+}
+
+    <script>
+        $(function () {
+            var urlForModels = "/Employer/FillCompany";
+            $("#CompanyName").click(function () {
+                var CompanyNameId = $(this).val();
+                $.getJSON(urlForModels, function (data) {
+                    var modelsHtml = "";
+                    $.each(data, function (a, b) {
+                        modelsHtml += "<option value='" + b.Id + "'>" + b.Name + "</option>";
+                    });
+                    $("#Model").html(modelsHtml);
+                });
+            });
+        });
+
+        $(function () {
+            var urlForModels = "/Employer/FillExperience";
+            $("#Experience").click(function () {
+                var ExperienceId = $(this).val();
+                $.getJSON(urlForModels, function (data) {
+                    var modelsHtml = "";
+                    $.each(data, function (a, b) {
+                        modelsHtml += "<option value='" + b.Id + "'>" + b.Name + "</option>";
+                    });
+                    $("#Model2").html(modelsHtml);
+                });
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $("#CompanyName").submit(function (e) {
+
+                $.ajax({
+                    type: "Post",
+                    url: "/Employer/GetSelectedItems",
+                    data: {
+                        selectedCompany: $("#CompanyName").val(),
+                        selectedExperience: $("#Experience").serialize(),
+
+                    },
+                    success: function (data) {
+                        alert(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+                });
+
+                e.preventDefault(); //STOP default action
+            });
+        });
+    </script>

@@ -36,6 +36,7 @@ namespace Agency.Models.Repository
             }
         }
 
+
         public IList<T> Find(FT filter, FetchOptions options = null)
         {
             var crit = session.CreateCriteria<T>();
@@ -57,10 +58,17 @@ namespace Agency.Models.Repository
         {
             using (var tr = session.BeginTransaction())
             {
-                session.Save(entity);
+                session.SaveOrUpdate(entity);
                 tr.Commit();
             }
 
+        }
+
+        public IList<T> GetAllWithSort(FetchOptions options)
+        {
+            var crit = session.CreateCriteria<T>();
+            SetFetchOptions(crit, options);
+            return crit.List<T>();
         }
 
     }

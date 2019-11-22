@@ -15,12 +15,14 @@ namespace Agency.Controllers
     {
         private CompanyRepository companyRepository;
         private EmployerRepository employerRepository;
+        private JobseekerRepository jobseekerRepository;
 
-        public EmployerController(EmployerRepository employerRepository, CompanyRepository companyRepository, ExperienceRepository experienceRepository, UserRepository userRepository)
+        public EmployerController(JobseekerRepository jobseekerRepository ,EmployerRepository employerRepository, CompanyRepository companyRepository, ExperienceRepository experienceRepository, UserRepository userRepository)
             : base(userRepository, experienceRepository)
         {
             this.employerRepository = employerRepository;
             this.companyRepository = companyRepository;
+            this.jobseekerRepository = jobseekerRepository;
         }
 
         public List<SelectListItem> GetCompanies()
@@ -52,7 +54,11 @@ namespace Agency.Controllers
             };
             return View(model);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult CreateVacancy(VacancyViewModel model)
         {
@@ -75,7 +81,10 @@ namespace Agency.Controllers
                 };
                 try
                 {
-                    employerRepository.SaveWProcedure(vacancy, Convert.ToInt64(User.Identity.GetUserId()));
+                    var id = employerRepository.SaveWProcedure(vacancy, Convert.ToInt64(User.Identity.GetUserId()));
+                    vacancy = employerRepository.Load(id);
+                    vacancy.Requirements = experienceRepository.GetSelectedExperience(IdList);
+                    employerRepository.Save(vacancy);
                     return RedirectToAction("Main", "employer");
                 }
                 catch
@@ -111,6 +120,8 @@ namespace Agency.Controllers
 
             var model = new VacancyViewModel
             {
+                Entity = vacancy,
+                Id = vacancy.Id,
                 Experience = exp,
                 Company = items,
                 Description = vacancy.VacancyDescription,
@@ -124,9 +135,14 @@ namespace Agency.Controllers
         [HttpPost]
         public ActionResult EditVacancy(VacancyViewModel model)
         {
-
+            List<long> IdList = new List<long>();
+            foreach (var e in model.SelectedExperience)
+            {
+                IdList.Add(Convert.ToInt64(e));
+            }
             var vacancy = new Vacancy
             {
+                Id = model.Id,
                 Ends = model.Ends,
                 Starts = model.Starts,
                 VacancyName = model.Name,
@@ -134,6 +150,7 @@ namespace Agency.Controllers
                 VacancyDescription = model.Description,
                 Company = companyRepository.Load(Convert.ToInt64(model.SelectedCompany)),
                 Creator = UserManager.FindById(Convert.ToInt64(User.Identity.GetUserId())),
+                Requirements = experienceRepository.GetSelectedExperience(IdList)
             };
             employerRepository.Save(vacancy);
             return RedirectToAction("Main", "employer");
@@ -146,7 +163,45 @@ namespace Agency.Controllers
                 vacancy.Status = Status.Blocked;
             else
                 vacancy.Status = Status.Active;
-            return RedirectToAction("ShowVacancies", "employer"); 
+            employerRepository.Save(vacancy);
+            return RedirectToAction("ShowVacancies", "common"); 
         }
+
+        public ActionResult FillCompany()
+        {
+            var list = companyRepository.GetAll()
+                        .AsEnumerable()
+                        .Select(s => new { Id = s.Id, Name = s.CompanyName})
+                        .ToList();
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult FillExperience()
+        {
+            var list = experienceRepository.GetAll()
+                        .AsEnumerable()
+                        .Select(s => new { Id = s.Id, Name = s.Skill })
+                        .ToList();
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult FindCandidate(long Id)
+        {
+            var exp = employerRepository.Load(Id).Requirements;
+            List<long> list = new List<long>();
+            foreach (var e in exp)
+            {
+                list.Add(e.Id);
+            }
+            var model = new ProfileListViewModel
+                {
+                Profiles = jobseekerRepository.FindSuitableCandidate(list)
+                };
+
+            return View("ShowCandidates", "", model);
+        }
+
+
+
     }
 }

@@ -26,27 +26,28 @@ namespace Agency.Controllers
 
         
 
-        public ActionResult ShowUsers()
+        public ActionResult ShowUsers(FetchOptions options)
         {
             var model = new UserListViewModel
             {
-                Users = userRepository.GetAll()
+                Users = userRepository.GetAllWithSort(options)
             };
 
             return View(model);
         }
 
-        public ActionResult EditUser()
+        public ActionResult EditUser(long Id)
         {
-            var current = userRepository.Load(Convert.ToInt64(User.Identity.GetUserId()));
+            var current = userRepository.Load(Id);
             var model = new RegisterViewModel
             {
+                Entity = current,
                 Email = current.UserName,
                 Password = current.Password,
                 Role = current.Role,
                 PhoneNumber = current.PhoneNumber
             };
-            return View();
+            return View(model);
         }
 
         [HttpPost]
@@ -54,7 +55,8 @@ namespace Agency.Controllers
         {
            var user = new User
             {
-                Password = model.Password,
+               Id = model.Id,
+                Password = UserManager.PasswordHasher.HashPassword(model.Password),
                 PhoneNumber = model.PhoneNumber,
                 Role = model.Role,
                 UserName = model.Email

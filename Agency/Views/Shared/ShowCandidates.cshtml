@@ -7,31 +7,29 @@
 
 <h2>ShowCandidates</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+
 <table class="table" border="1" align="center">
     <tr>
         @if (Model.Profiles.Count() != 0)
         {
             <td>
-                @Html.SortLink("Имя", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Имя", "Name", "ShowCandidates", "Common", new RouteValueDictionary { { "id", Model.Profiles[0].Id} })
             </td>
             <td>
-                @Html.SortLink("Дата роджения", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Дата роджения", "DateofBirth", "ShowCandidates", "Common", new RouteValueDictionary { { "id", Model.Profiles[0].Id }})
             </td>
             <td>
-                @Html.SortLink("Опыт", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Опыт", "Experience", "ShowCandidates", "Common", new RouteValueDictionary { { "id", Model.Profiles[0].Id }})
             </td>
             //а черт его знает, нужна ли сортировка по опыту, но пусть пока будет
             <td>
-                @Html.SortLink("Имя", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Фото", "Avatar", "ShowCandidates", "Common", new RouteValueDictionary { { "id", Model.Profiles[0].Id } })
             </td>
             <td>
-                @Html.SortLink("Почта", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Почта", "none", "ShowCandidates", "Common", new RouteValueDictionary { { "id", Model.Profiles[0].Id} })
             </td>
             <td>
-                @Html.SortLink("Телефон", "Name", "ShowCandidate", "Admin", new RouteValueDictionary { })
+                @Html.SortLink("Телефон", "User.PhoneNumber", "ShowCandidates", "Common", new RouteValueDictionary {{ "id", Model.Profiles[0].Id} })
             </td>
             <td></td>
         }
@@ -52,18 +50,23 @@
                 @exp.Skill
             }
         </td>
-        <td>@item.Avatar</td>
+        @if (item.Avatar != null)
+        {
+            <td><img src=@(Url.Content(@"~\App_Data\Files\") + item.Avatar.Name) , type="file" name="Photo" /></td>
+        }
+        else
+        {
+            <td><img src=@(Url.Content(@"~\Content\Images\default.png")) ) , type="file" name="Photo" /></td>
+        }
         <td>@item.User.UserName</td>
         <td>@item.User.PhoneNumber</td>
-        <td></td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-        </td>
     </tr>
             }
 
 </table>
+
+<div>
+    @Html.ActionLink("Назад", "Redirect", "Common")
+</div>
 
 

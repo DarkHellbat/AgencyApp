@@ -1,5 +1,7 @@
 ﻿using Agency.Models;
+using Agency.Models.Filters;
 using Agency.Models.Repository;
+using Microsoft.AspNet.Identity;
 using NHibernate;
 using System;
 using System.Collections.Generic;
@@ -19,12 +21,14 @@ namespace Agency.Controllers
             this.employerRepository = employerRepository;
             this.jobseekerRepository = jobseekerRepository;
         }
-        public ActionResult Index()
+        public ActionResult Redirect()
         {
-            return View();
+            var role = UserManager.GetRoles(Convert.ToInt64(User.Identity.GetUserId())).SingleOrDefault();
+            //иногда возникает проблема с созданием UserManager. Выглядит как проблема из коробки. Но оно работает само по себе
+            return RedirectToAction("Main", String.Format("{0}", role.ToString()));
         }
 
-        public ActionResult ShowVacancies(FetchOptions options)
+        public ActionResult ShowVacancies(VacancyFilter filter, FetchOptions options)
         {
             var model = new VacancyListViewModel
             {
@@ -34,12 +38,12 @@ namespace Agency.Controllers
             {
                 case Models.Role.Employer:
                     {
-                        model.Vacancies = employerRepository.ShowMyVacancies(CurrentUser.Id);
+                        model.Vacancies = employerRepository.ShowMyVacancies(CurrentUser.Id, filter, options);
                        return View(model);
                     }
                 case Models.Role.Admin:
                     {
-                        model.Vacancies = employerRepository.GetAll();
+                        model.Vacancies = employerRepository.GetAllWithSort(options);
                         return View(model);
                     }
                 case Role.Jobseeker:
@@ -52,11 +56,11 @@ namespace Agency.Controllers
             return View();
         }
 
-        public ActionResult ShowCandidates()
+        public ActionResult ShowCandidates(JobseekersFilter filter, FetchOptions options)
         {
             var model = new ProfileListViewModel
             {
-                Profiles = jobseekerRepository.GetAll()
+                Profiles = jobseekerRepository.GetAllWithSort(options)
             };
 
             return View(model);
@@ -71,5 +75,10 @@ namespace Agency.Controllers
 
             return View();
         }
+
+        //public ActionResult GetSelectedItems(string selectedCompany, string selectedExperience)
+        //{
+        //    return PartialView("ShowVacancies", );
+        //}
     }
 }

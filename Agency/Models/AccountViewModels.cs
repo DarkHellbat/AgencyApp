@@ -72,8 +72,9 @@ namespace Agency.Models
         }
     }
 
-    public class RegisterViewModel
+    public class RegisterViewModel : EntityModel<User>
     {
+        
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]

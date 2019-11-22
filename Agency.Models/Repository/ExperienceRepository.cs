@@ -34,7 +34,7 @@ namespace Agency.Models.Repository
                     Skill = e
                 };
                 Save(experience);
-                experiences.Add(Find(new BaseFilter { SearchString = e }).FirstOrDefault().Id);
+                experiences.Add(experience.Id);
             }
             return experiences;
         }

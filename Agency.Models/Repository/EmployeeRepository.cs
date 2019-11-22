@@ -18,16 +18,21 @@ namespace Agency.Models.Repository
 
         }
 
-        public IList<Vacancy> ShowMyVacancies(long userId)
+        public IList<Vacancy> ShowMyVacancies(long userId, VacancyFilter filter ,FetchOptions options)
         {
             var crit = session.CreateCriteria<Vacancy>();
             crit.Add(Restrictions.Eq("Creator.Id", userId));
+            if (options != null)
+            {
+                SetFetchOptions(crit, options);
+            }
             return crit.List<Vacancy>();
+            
         }
 
-        public void SaveWProcedure(Vacancy vacancy, long Id)
+        public long SaveWProcedure(Vacancy vacancy, long Id)
         {
-            var result = session.CreateSQLQuery("exec sp_InsertVacancy :VacancyName, :VacancyDescription, :Starts, :Ends, :User_id, :Status, :Company_id")
+            var query = session.CreateSQLQuery("exec sp_InsertVacancy :VacancyName, :VacancyDescription, :Starts, :Ends, :User_id, :Status, :Company_id")
                     .SetParameter("VacancyName", vacancy.VacancyName)
                     .SetParameter("VacancyDescription", vacancy.VacancyDescription)
                     .SetParameter("Starts", vacancy.Starts)
@@ -36,7 +41,11 @@ namespace Agency.Models.Repository
                     .SetParameter("Status", vacancy.Status)
                     .SetParameter("Company_id", vacancy.Company.Id)
                     ;
-            result.ExecuteUpdate();
+            var result = query.UniqueResult();
+
+            return long.Parse(result.ToString());
+            //здесь нет опыта, потому что нужно передавать множественный параметр. Делается оно через XML, но я пока такое не умею
+            //Опыт записывается через апдейт, который идет после
         }
 
         public override void SetupFilter(ICriteria crit, VacancyFilter filter)
@@ -83,6 +92,15 @@ namespace Agency.Models.Repository
                     }
                 }
             }
+        }
+
+        public IList<Vacancy> FindSuitableVacancy(List<long> experiences)
+        {
+            var crit = session.CreateCriteria<Vacancy>()
+                .CreateAlias("Requirements", "VacancyExperience")
+                .Add(Restrictions.In("VacancyExperience.id", experiences));
+            return crit.List<Vacancy>();
+
         }
     }
 }

@@ -1,19 +1,26 @@
 ﻿@model Agency.Models.VacancyListViewModel
 @using Agency.Extensions;
 @using Agency.Models;
+@using Agency.Models.Filters
+
 
 @{
     ViewBag.Title = "ShowVacancies";
 }
 
 <h2>ShowVacancies</h2>
-
+<div style="padding: 20px;">
+    @Html.Partial("VacancyFilter", new VacancyFilter())
+</div>
 <p>
     @if (Model.Role == Role.Employer)
     {
         @Html.ActionLink("Create New", "Createvacancy", "Employer")
     }
     </p>
+@*<div>
+    @Html.Partial("VacancyFilter", new VacancyFilter())
+</div>*@
 <table class="table" border="1" align="center">
     <tr>
         @if (Model.Vacancies.Count() != 0)
@@ -22,10 +29,10 @@
                 @Html.SortLink("Название вакансии", "VacancyName", "ShowVacancies", "Common", new RouteValueDictionary { { "Id", Model.Vacancies[0].Id } })
             </td>
             <td>
-                @Html.SortLink("Описание", "VacancyDescription", "ShowVacancies", "Common", new RouteValueDictionary { })
+                @Html.SortLink("Описание", "VacancyDescription", "ShowVacancies", "Common", new RouteValueDictionary { { "Id", Model.Vacancies[0].Creator.Id } })
             </td>
             <td>
-                @Html.SortLink("Компания", "Company", "ShowVacancies", "Common", new RouteValueDictionary { })
+                @Html.SortLink("Компания", "Company", "ShowVacancies", "Common", new RouteValueDictionary { { "Id", Model.Vacancies[0].Creator.Id } })
             </td>
             //а черт его знает, нужна ли сортировка по опыту, но пусть пока будет
             <td>
@@ -65,20 +72,22 @@
             <td>
                 @item.Status
                 <br />
-                @Html.ActionLink("Изменить статус", "ChangeStatus")
+                @Html.ActionLink("Изменить статус", "ChangeStatus", "Employer", new { id = item.Id }, null)
             </td>
             <td></td>
             @if (Model.Role == Role.Employer)
             {
             <td>
-                @Html.ActionLink("Редактировать вакансию", "EditProfile", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Редактировать вакансию", "EditVacancy", "Employer", new { id = item.Id }, null) |
+                @Html.ActionLink("Поиск кандидатов", "FindCandidate", "employer", new {id = item.Id}, null)
             </td>
             }
         </tr>
     }
 
 </table>
+<div>
+    @Html.ActionLink("Назад", "Redirect", "Common")
+</div>
 
 
