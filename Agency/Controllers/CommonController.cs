@@ -1,5 +1,6 @@
 ﻿using Agency.Models;
 using Agency.Models.Filters;
+using Agency.Models.Models;
 using Agency.Models.Repository;
 using Microsoft.AspNet.Identity;
 using NHibernate;
@@ -15,9 +16,11 @@ namespace Agency.Controllers
     {
         private EmployerRepository employerRepository;
         private JobseekerRepository jobseekerRepository;
-        public CommonController(UserRepository userRepository, EmployerRepository employerRepository, ExperienceRepository experienceRepository, JobseekerRepository jobseekerRepository)
+        private CompanyRepository companyRepository;
+        public CommonController(CompanyRepository companyRepository, UserRepository userRepository, EmployerRepository employerRepository, ExperienceRepository experienceRepository, JobseekerRepository jobseekerRepository)
             : base (userRepository, experienceRepository)
         {
+            this.companyRepository = companyRepository;
             this.employerRepository = employerRepository;
             this.jobseekerRepository = jobseekerRepository;
         }
@@ -48,7 +51,8 @@ namespace Agency.Controllers
                     }
                 case Role.Jobseeker:
                     {
-                        return RedirectToAction("AccessError");
+                        model.Vacancies = employerRepository.GetAllWithSort(options);
+                        return View(model);
                     }
                    
             }
@@ -76,9 +80,38 @@ namespace Agency.Controllers
             return View();
         }
 
-        //public ActionResult GetSelectedItems(string selectedCompany, string selectedExperience)
-        //{
-        //    return PartialView("ShowVacancies", );
-        //}
+        public ActionResult GetSelectedItems(string selectedCompany, string selectedExperience)
+        {
+            if (long.TryParse(selectedCompany, out long company) != true)
+            {
+                company = 0;
+            }
+            else
+            {
+                company = long.Parse(selectedCompany);
+            }
+            List<Experience> experiences = new List<Experience>();
+            if (long.TryParse(selectedExperience, out long experience) != true)
+            {
+                experiences = null;
+            }
+            else
+            {
+                experiences.Add(experienceRepository.Load(long.Parse(selectedExperience)));
+            }
+            VacancyFilter filter = new VacancyFilter
+            {
+                CompanyName = companyRepository.Load(company),
+                Experience = experiences
+
+            };
+            IList<Vacancy> vacancies = employerRepository.GetVacanciesFiltered(filter);
+            var model = new VacancyListViewModel
+                {
+                Vacancies = vacancies,
+                Role = CurrentUser.Role
+                };
+            return PartialView("VacanciesTable", model);
+        }
     }
 }

@@ -65,7 +65,16 @@ namespace Agency.Controllers
             if (ModelState.IsValid)
             {
                 List<long> IdList = new List<long>();
-                foreach (var e in model.SelectedExperience)
+                if (model.NewExperience != null)
+                {
+                    IdList.AddRange(experienceRepository.CreateNewExperience(model.NewExperience));
+                }
+                if (model.NewExperience == null && model.SelectedExperience == null)
+                {
+                    IdList.AddRange(experienceRepository.CreateNewExperience("Без опыта"));
+                }
+                if (model.SelectedExperience != null)
+                    foreach (var e in model.SelectedExperience)
                 {
                     IdList.Add(Convert.ToInt64(e));
                 }

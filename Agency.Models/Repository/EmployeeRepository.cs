@@ -21,6 +21,7 @@ namespace Agency.Models.Repository
         public IList<Vacancy> ShowMyVacancies(long userId, VacancyFilter filter ,FetchOptions options)
         {
             var crit = session.CreateCriteria<Vacancy>();
+            SetupFilter(crit, filter);
             crit.Add(Restrictions.Eq("Creator.Id", userId));
             if (options != null)
             {
@@ -50,7 +51,6 @@ namespace Agency.Models.Repository
 
         public override void SetupFilter(ICriteria crit, VacancyFilter filter)
         {
-            base.SetupFilter(crit, filter);
             if (filter != null)
             {
                 if (filter.Experience != null)
@@ -60,7 +60,8 @@ namespace Agency.Models.Repository
                     {
                         exp.Add(e.Id);
                     }
-                    crit.Add(Restrictions.In("Id", exp));
+                    crit.CreateAlias("Requirements", "VacancyExperience")
+                        .Add(Restrictions.In("VacancyExperience.id", exp));
                 }
                 if (filter.StartDateRange != null)
                 {
@@ -72,6 +73,10 @@ namespace Agency.Models.Repository
                     {
                         crit.Add(Restrictions.Le("Starts", filter.StartDateRange.To.Value));
                     }
+                }
+                if (filter.CompanyName!=null)
+                {
+                    crit.Add(Restrictions.Eq("Company.id", filter.CompanyName.Id));
                 }
                 if (filter.EndDateRange != null)
                 {
@@ -92,6 +97,14 @@ namespace Agency.Models.Repository
                     }
                 }
             }
+        }
+
+        public IList<Vacancy> GetVacanciesFiltered(VacancyFilter filter)
+        {
+            var crit = session.CreateCriteria<Vacancy>();
+            SetupFilter(crit, filter);
+            
+            return crit.List<Vacancy>();
         }
 
         public IList<Vacancy> FindSuitableVacancy(List<long> experiences)

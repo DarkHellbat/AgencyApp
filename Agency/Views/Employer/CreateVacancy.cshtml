@@ -1,10 +1,10 @@
 ﻿@model Agency.Models.VacancyViewModel
 
 @{
-    ViewBag.Title = "CreateVacancy";
+    ViewBag.Title = "Создать вакансию";
 }
 
-<h2>CreateVacancy</h2>
+<h2>Создать вакансию</h2>
 
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/bundles/jqueryval")
@@ -13,7 +13,6 @@
     @Html.AntiForgeryToken()
 
 <div class="form-horizontal">
-    <h4>VacancyViewModel</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <div class="form-group">
@@ -66,12 +65,12 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" />
+            <input type="submit" value="Создать" class="btn btn-default" />
         </div>
     </div>
 </div>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Назад", "Main")
 </div>

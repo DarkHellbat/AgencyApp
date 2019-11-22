@@ -48,29 +48,36 @@ namespace Agency.Controllers
             if (ModelState.IsValid)
             {
                 var path = AppDomain.CurrentDomain.BaseDirectory;
-                var file = new BinaryFile
+                var file = new BinaryFile();
+                if (model.Photo != null)
                 {
-                    Name = DateTime.Now.ToString().Replace("/", "_").Replace(":", "_") + model.Photo.FileName,
-                    Path = Path.Combine(path, @"App_Data\Files", DateTime.Now.ToString().Replace("/", "_").Replace(":", "_") + model.Photo.FileName),
-                    ContentType = model.Photo.ContentType
-                };
-                if (!Directory.Exists(file.Path))
-                {
-                    Directory.CreateDirectory(Path.Combine(path, @"App_Data\Files"));
+                    file = new BinaryFile
+                    {
+                        Name = DateTime.Now.ToString().Replace("/", "_").Replace(":", "_") + model.Photo.FileName,
+                        Path = Path.Combine(path, @"App_Data\Files", DateTime.Now.ToString().Replace("/", "_").Replace(":", "_") + model.Photo.FileName),
+                        ContentType = model.Photo.ContentType
+                    };
+                    if (!Directory.Exists(file.Path))
+                    {
+                        Directory.CreateDirectory(Path.Combine(path, @"App_Data\Files"));
+                    }
+                    using (var fileStream = System.IO.File.Create(file.Path))
+                    {
+                        model.Photo.InputStream.Seek(0, System.IO.SeekOrigin.Begin);
+                        model.Photo.InputStream.CopyTo(fileStream);
+                    }
+                    fileRepository.Save(file);
                 }
-                using (var fileStream = System.IO.File.Create(file.Path))
-                {
-                    model.Photo.InputStream.Seek(0, System.IO.SeekOrigin.Begin);
-                    model.Photo.InputStream.CopyTo(fileStream);
-                }
-                //fileRepository.CreateFile(path, file, stream);
-               
-                fileRepository.Save(file);
             List<long> IdList = new List<long>();
             if (model.NewExperience!=null)
                 {
-                    IdList.AddRange( experienceRepository.CreateNewExperience(model.NewExperience));
+                    IdList.AddRange(experienceRepository.CreateNewExperience(model.NewExperience));
                 }
+            if (model.NewExperience == null && model.SelectedExperience == null)
+                {
+                    IdList.AddRange(experienceRepository.CreateNewExperience("Без опыта"));
+                }
+            if (model.SelectedExperience != null)
             foreach (var e in model.SelectedExperience)
             {
                 IdList.Add(Convert.ToInt64(e));

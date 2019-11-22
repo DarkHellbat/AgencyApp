@@ -30,7 +30,9 @@ namespace Agency.Models
         [DataType(DataType.Text)]
         [Display(Name = "Статус вакансии")]
         public string Status { get; set; }
-    }
+
+        [Display(Name = "Если ваших навыков нет в списке, введите их через ;")]
+        public string NewExperience { get; set; }
 
     public class VacancyListViewModel : EntityModel<List<Vacancy>>
     {
